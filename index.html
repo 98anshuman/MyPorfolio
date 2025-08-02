@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anshuman Cybersecurity Portfolio</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header>
+    <div class="avatar-container">
+      <div class="avatar-bg">
+        <img src="no_bg.png" alt="Profile" class="avatar" />
+      </div>
+    </div>
+    <h1>Anshuman<br /><span class="cyber-glow">Cybersecurity Engineer</span></h1>
+    <nav>
+      <ul>
+        <li><a href="#about">About Me</a></li>
+        <li><a href="#resume">Resume</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="about">
+    <h2>About Me</h2>
+    <p>
+      <span class="cyber-glow">Hello!</span> I am Anshuman, a passionate cybersecurity engineer dedicated to safeguarding digital assets.<br />
+      From <b>penetration testing</b> to <b>incident response</b>, my mission is to make the online world more secure.<br />
+      I love automating defenses, finding vulnerabilities, and staying ahead of cyber threats.
+    </p>
+  </section>
+
+  <section id="resume">
+    <h2>Resume</h2>
+    <div class="resume-card">
+      <div class="resume-icon">&#128187;</div>
+      <div>
+        <h3>My Professional Resume</h3>
+        <p>Download my up-to-date cybersecurity engineer resume (PDF).</p>
+        <a href="Anshuman_Resume.pdf" target="_blank" class="resume-link" download>
+          <span class="resume-btn-label">&#128229; Download Resume</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    <div class="project-grid" id="projectGrid">
+      <!-- Dynamic project tiles will be inserted here -->
+      <div class="project-tile add-new" id="addNewProject">
+        <span>+</span>
+        <p>Add New Project</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <h2>
+      Skills
+      <button id="editSkillsBtn" class="edit-btn skill-edit-btn">Edit</button>
+    </h2>
+    <ul class="skills-list" id="skillsList">
+      <!-- Skills loaded dynamically -->
+    </ul>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <p><b>Email:</b> anshuman@example.com</p>
+    <p><b>LinkedIn:</b>
+      <a href="https://www.linkedin.com/in/anshuman-00020a193" target="_blank" rel="noopener" class="linkedin-link">
+        linkedin.com/in/anshuman-00020a193
+      </a>
+    </p>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Anshuman Cybersecurity Portfolio</p>
+  </footer>
+
+  <!-- Modal for Add/Edit Project -->
+  <div id="projectModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Add/Edit Project</h3>
+      <label>
+        Project Title:<br />
+        <input type="text" id="projectTitleInput" />
+      </label><br /><br />
+      <label>
+        Project Description:<br />
+        <textarea id="projectDescInput" rows="4"></textarea>
+      </label><br /><br />
+      <button id="saveProjectBtn">Save</button>
+      <button id="cancelProjectBtn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Modal for Edit Skills -->
+  <div id="skillsModal" class="modal">
+    <div class="modal-content">
+      <h3>Edit Skills</h3>
+      <label>
+        Enter skills separated by commas:<br />
+        <textarea id="skillsInput" rows="5"></textarea>
+      </label><br /><br />
+      <button id="saveSkillsBtn">Save</button>
+      <button id="cancelSkillsBtn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Write with me message (hidden by default) -->
+  <div id="writeWithMe" class="write-with-me" style="display:none;">
+    Write with me!
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
