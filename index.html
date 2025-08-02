@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Anshuman Cybersecurity Portfolio</title>
 
-  <!-- Firebase Modular SDK init -->
+  <!-- Firebase Initialization -->
   <script type="module" src="firebase-init.js"></script>
 
+  <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
 </head>
@@ -18,7 +19,10 @@
         <img src="no_bg.png" alt="Profile" class="avatar" />
       </div>
     </div>
-    <h1>Anshuman<br /><span class="cyber-glow">Cybersecurity Engineer</span></h1>
+    <h1>
+      Anshuman<br />
+      <span class="cyber-glow">Cybersecurity Engineer</span>
+    </h1>
     <nav>
       <ul>
         <li><a href="#about">About Me</a></li>
@@ -56,8 +60,8 @@
   <section id="projects">
     <h2>Projects</h2>
     <div class="project-grid" id="projectGrid">
-      <!-- Project tiles loaded dynamically -->
-      <div class="project-tile add-new" id="addNewProject">
+      <!-- Project tiles dynamically injected here -->
+      <div class="project-tile add-new" id="addNewProject" title="Add New Project">
         <span>+</span>
         <p>Add New Project</p>
       </div>
@@ -76,10 +80,9 @@
     <h2>Contact</h2>
     <p><b>Email:</b> anshuman0124@gmail.com</p>
     <p><b>Phone No:</b> +91 8709934756</p>
-    <p><b>LinkedIn:</b>
-      <a href="https://www.linkedin.com/in/anshuman-00020a193" target="_blank" rel="noopener" class="linkedin-link">
-        linkedin.com/in/anshuman-00020a193
-      </a>
+    <p>
+      <b>LinkedIn:</b>
+      <a href="https://www.linkedin.com/in/anshuman-00020a193" target="_blank" rel="noopener" class="linkedin-link">linkedin.com/in/anshuman-00020a193</a>
     </p>
   </section>
 
@@ -87,41 +90,43 @@
     <p>&copy; 2025 Anshuman Cybersecurity Portfolio</p>
   </footer>
 
-  <!-- Project Modal -->
-  <div id="projectModal" class="modal">
+  <!-- Add/Edit Project Modal -->
+  <div id="projectModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
     <div class="modal-content">
       <h3 id="modalTitle">Add/Edit Project</h3>
-      <label>
-        Project Title:<br />
-        <input type="text" id="projectTitleInput" />
-      </label><br /><br />
-      <label>
-        Project Description:<br />
-        <textarea id="projectDescInput" rows="4"></textarea>
-      </label><br /><br />
+      <label for="projectTitleInput">Project Title:</label><br />
+      <input type="text" id="projectTitleInput" /><br /><br />
+      <label for="projectDescInput">Project Description:</label><br />
+      <textarea id="projectDescInput" rows="6"></textarea><br /><br />
       <button id="saveProjectBtn">Save</button>
       <button id="cancelProjectBtn">Cancel</button>
     </div>
   </div>
 
-  <!-- Skills Modal -->
-  <div id="skillsModal" class="modal">
+  <!-- Edit Skills Modal -->
+  <div id="skillsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="skillsModalLabel" tabindex="-1">
     <div class="modal-content">
-      <h3>Edit Skills</h3>
-      <label>
-        Enter skills separated by commas:<br />
-        <textarea id="skillsInput" rows="5"></textarea>
-      </label><br /><br />
+      <h3 id="skillsModalLabel">Edit Skills</h3>
+      <label for="skillsInput">Enter skills separated by commas:</label><br />
+      <textarea id="skillsInput" rows="5"></textarea><br /><br />
       <button id="saveSkillsBtn">Save</button>
       <button id="cancelSkillsBtn">Cancel</button>
     </div>
   </div>
 
-  <!-- Write with me message -->
-  <div id="writeWithMe" class="write-with-me" style="display:none;">
-    Write with me!
+  <!-- Fullscreen Project Detail Modal -->
+  <div id="projectDetailModal" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="detailProjectTitle" tabindex="-1" style="display:none;">
+    <div class="fullscreen-modal-content">
+      <button id="closeProjectDetailBtn" class="close-btn" aria-label="Close project details">&times;</button>
+      <h2 id="detailProjectTitle"></h2>
+      <p id="detailProjectDescription"></p>
+    </div>
   </div>
 
+  <!-- Write with me message -->
+  <div id="writeWithMe" class="write-with-me" style="display:none;">Write with me!</div>
+
+  <!-- Main JavaScript -->
   <script type="module" src="script.js"></script>
 </body>
 </html>

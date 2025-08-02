@@ -1,10 +1,8 @@
 import { ref, get, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 import { db } from "./firebase-init.js";
 
-// Detect if running on GitHub Pages
 const isGitHubPages = window.location.hostname.includes("github.io");
 
-// Cache DOM elements
 const projectGrid = document.getElementById("projectGrid");
 const skillsList = document.getElementById("skillsList");
 const addNewBtn = document.getElementById("addNewProject");
@@ -24,29 +22,29 @@ const cancelSkillsBtn = document.getElementById("cancelSkillsBtn");
 
 const writeWithMeEl = document.getElementById("writeWithMe");
 
-// Data and state
+const projectDetailModal = document.getElementById("projectDetailModal");
+const detailProjectTitle = document.getElementById("detailProjectTitle");
+const detailProjectDescription = document.getElementById("detailProjectDescription");
+const closeProjectDetailBtn = document.getElementById("closeProjectDetailBtn");
+
 let editingProjectIndex = null;
 let projectsData = [];
 let skillsData = [];
 
-/**
- * Toggle visibility of Add/Edit UI elements based on environment
- */
 function toggleEditUI() {
   if (isGitHubPages) {
     if (addNewBtn) addNewBtn.style.display = "none";
-    document.querySelectorAll(".edit-btn").forEach((btn) => (btn.style.display = "none"));
+    document.querySelectorAll(".edit-btn").forEach(btn => (btn.style.display = "none"));
     if (editSkillsBtn) editSkillsBtn.style.display = "none";
     if (writeWithMeEl) writeWithMeEl.style.display = "block";
   } else {
     if (addNewBtn) addNewBtn.style.display = "";
-    document.querySelectorAll(".edit-btn").forEach((btn) => (btn.style.display = ""));
+    document.querySelectorAll(".edit-btn").forEach(btn => (btn.style.display = ""));
     if (editSkillsBtn) editSkillsBtn.style.display = "";
     if (writeWithMeEl) writeWithMeEl.style.display = "none";
   }
 }
 
-/** Load projects from Firebase or fallback */
 async function loadProjects() {
   try {
     const snapshot = await get(ref(db, "projects"));
@@ -55,13 +53,11 @@ async function loadProjects() {
       : [
           {
             title: "Network Vulnerability Scanner",
-            description:
-              "Built an automated scanner for open ports, outdated protocols, and known vulnerabilities across enterprise infrastructure.",
+            description: "Built an automated scanner for open ports, outdated protocols, and known vulnerabilities across enterprise infrastructure.",
           },
           {
             title: "Web Application Security Testing",
-            description:
-              "Found and reported CVSS-9+ vulnerabilities in client web apps; automated scripting for SQLi, XSS, CSRF and business logic flaws.",
+            description: "Found and reported CVSS-9+ vulnerabilities in client web apps; automated scripting for SQLi, XSS, CSRF and business logic flaws.",
           },
         ];
   } catch (err) {
@@ -70,7 +66,6 @@ async function loadProjects() {
   }
 }
 
-/** Save projects to Firebase */
 async function saveProjects(projects) {
   try {
     await set(ref(db, "projects"), projects);
@@ -79,7 +74,6 @@ async function saveProjects(projects) {
   }
 }
 
-/** Load skills from Firebase or fallback */
 async function loadSkills() {
   try {
     const snapshot = await get(ref(db, "skills"));
@@ -102,7 +96,6 @@ async function loadSkills() {
   }
 }
 
-/** Save skills to Firebase */
 async function saveSkills(skills) {
   try {
     await set(ref(db, "skills"), skills);
@@ -111,26 +104,25 @@ async function saveSkills(skills) {
   }
 }
 
-/**
- * Create a project tile DOM node with conditional Edit button
- */
 function createProjectTile(proj, index) {
   const tile = document.createElement("div");
   tile.className = "project-tile";
 
   tile.innerHTML = `
     <h3>${proj.title}</h3>
-    <div class="desc">${proj.description}</div>
-    ${!isGitHubPages ? '<button class="edit-btn">Edit</button>' : ""}
+    <div class="desc" style="display:none;">${proj.description}</div>
+    ${!isGitHubPages ? '<button class="edit-btn">Edit</button>' : ''}
   `;
 
-  // Expand/collapse on tile click, except when clicking Edit
+  // Open fullscreen modal on tile click (except when Edit clicked)
   tile.addEventListener("click", (e) => {
     if (e.target.classList.contains("edit-btn")) return;
-    tile.classList.toggle("expanded");
+    detailProjectTitle.textContent = proj.title;
+    detailProjectDescription.textContent = proj.description;
+    projectDetailModal.style.display = "flex";
+    document.body.style.overflow = "hidden";
   });
 
-  // Bind Edit button click to modal open - only locally
   if (!isGitHubPages && tile.querySelector(".edit-btn")) {
     tile.querySelector(".edit-btn").addEventListener("click", (evt) => {
       evt.stopPropagation();
@@ -141,22 +133,12 @@ function createProjectTile(proj, index) {
   return tile;
 }
 
-/**
- * Render all projects and append Add New tile if allowed
- */
 function renderProjects() {
   projectGrid.innerHTML = "";
-  projectsData.forEach((proj, idx) => {
-    projectGrid.appendChild(createProjectTile(proj, idx));
-  });
-  if (!isGitHubPages && addNewBtn) {
-    projectGrid.appendChild(addNewBtn);
-  }
+  projectsData.forEach((proj, idx) => projectGrid.appendChild(createProjectTile(proj, idx)));
+  if (!isGitHubPages && addNewBtn) projectGrid.appendChild(addNewBtn);
 }
 
-/**
- * Render skills list either in expanded or compact state
- */
 function renderSkills(expanded = false) {
   skillsList.innerHTML = "";
   if (expanded) {
@@ -174,15 +156,11 @@ function renderSkills(expanded = false) {
   }
 }
 
-// Toggle skills expand/collapse on skills list click
 skillsList.addEventListener("click", () => {
   if (skillsList.classList.contains("compact")) renderSkills(true);
   else renderSkills(false);
 });
 
-/**
- * Open Project modal for add or edit
- */
 function openProjectModal(index = null) {
   editingProjectIndex = index;
   if (index !== null && projectsData[index]) {
@@ -197,10 +175,8 @@ function openProjectModal(index = null) {
   modal.style.display = "flex";
 }
 
-// Open modal on Add New Project click
 addNewBtn?.addEventListener("click", () => openProjectModal());
 
-// Save Project modal button logic
 saveProjectBtn.addEventListener("click", async () => {
   const title = projectTitleInput.value.trim();
   const desc = projectDescInput.value.trim();
@@ -208,7 +184,6 @@ saveProjectBtn.addEventListener("click", async () => {
     alert("Please fill in both fields.");
     return;
   }
-
   if (editingProjectIndex !== null) {
     projectsData[editingProjectIndex] = { title, description: desc };
   } else {
@@ -219,28 +194,21 @@ saveProjectBtn.addEventListener("click", async () => {
   await reloadProjects();
 });
 
-// Cancel Project modal
 cancelProjectBtn.addEventListener("click", () => {
   modal.style.display = "none";
 });
 
-// Close modal clicking outside content
 modal.addEventListener("click", (e) => {
   if (e.target === modal) modal.style.display = "none";
 });
 
-/**
- * Open Skills modal and prefill skills
- */
 function openSkillsModal() {
   skillsInput.value = skillsData.join(", ");
   skillsModal.style.display = "flex";
 }
 
-// Open skills modal on edit button click (only local)
 editSkillsBtn?.addEventListener("click", openSkillsModal);
 
-// Save Skills modal button
 saveSkillsBtn.addEventListener("click", async () => {
   const skillsText = skillsInput.value.trim();
   if (!skillsText) {
@@ -253,35 +221,36 @@ saveSkillsBtn.addEventListener("click", async () => {
   renderSkills(false);
 });
 
-// Cancel Skills modal
 cancelSkillsBtn.addEventListener("click", () => (skillsModal.style.display = "none"));
 skillsModal.addEventListener("click", (e) => {
   if (e.target === skillsModal) skillsModal.style.display = "none";
 });
 
-/**
- * Reload projects from Firebase and render
- */
+closeProjectDetailBtn.addEventListener("click", () => {
+  projectDetailModal.style.display = "none";
+  document.body.style.overflow = "";
+});
+
+projectDetailModal.addEventListener("click", (e) => {
+  if (e.target === projectDetailModal) {
+    projectDetailModal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+});
+
 async function reloadProjects() {
   projectsData = await loadProjects();
   renderProjects();
 }
 
-/**
- * Reload skills from Firebase and render compact
- */
 async function reloadSkills() {
   skillsData = await loadSkills();
   renderSkills(false);
 }
 
-/**
- * Initialization function to set UI and fetch data
- */
 async function init() {
-  toggleEditUI(); // Show/hide add/edit & write with me UI elements
+  toggleEditUI();
   await Promise.all([reloadProjects(), reloadSkills()]);
 }
 
-// Start the app
 init();
