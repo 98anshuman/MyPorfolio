@@ -1,141 +1,105 @@
-/* Base Fonts and Colors */
 body {
   background: #10142a;
   color: #e0eaff;
   font-family: 'Roboto', 'Arial', sans-serif;
-  padding: 0;
   margin: 0;
-  font-size: 1.07rem;
+  font-size: 1.09rem;
+  min-height: 100vh;
   letter-spacing: 0.01em;
 }
 
-/* Header */
 header {
   text-align: center;
-  padding: 50px 0 25px 0;
+  padding: 44px 0 15px 0;
   background: #000;
   color: #fff;
   border-bottom: 3px solid #1976d2;
   box-shadow: 0 6px 24px #040c22a0;
-  position: relative;
 }
 
-.avatar-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
+.avatar-container { display: flex; justify-content: center; margin-bottom: 18px; }
 .avatar-bg {
-  background: linear-gradient(135deg, #0f2244 70%, #1976d2 100%);
-  border-radius: 50%;
-  padding: 14px;
-  box-shadow: 0 6px 28px #11164db0;
+  background: linear-gradient(135deg, #0f2244 60%, #1976d2 100%);
+  border-radius: 50%; padding: 15px; box-shadow: 0 6px 28px #11164db0;
   display: inline-block;
 }
-
 .avatar {
-  width: 160px;
-  height: 160px;
+  width: 160px; height: 160px;
   object-fit: cover;
   border-radius: 50%;
   border: 3.5px solid #163462;
   box-shadow: 0 0 22px #12144888;
 }
-
+@media (max-width: 600px) {.avatar { width: 90px; height: 90px;}}
 header h1 {
-  margin-bottom: 9px;
-  margin-top: 8px;
-  font-size: 2.15rem;
-  font-weight: 700;
+  margin-bottom: 7px; margin-top: 10px;
+  font-size: 2.2rem; font-weight: 700; line-height: 1.15;
   letter-spacing: 2px;
-  line-height: 1.2;
 }
-
 .cyber-glow {
   color: #3cc2ff;
   text-shadow: 0 0 6px #54c3ff, 0 0 15px #2a60a9a0;
   font-family: 'Roboto Mono', monospace;
-  font-size: 1.12em;
+  font-size: 1.05em;
   letter-spacing: 1.5px;
 }
 
-/* Navigation */
 nav ul {
   list-style: none;
-  display: flex;
+  display: flex; flex-wrap: wrap;
   justify-content: center;
-  gap: 26px;
-  padding: 0;
-  margin: 0;
+  gap: 6vw;
+  padding: 0; margin: 0;
 }
-
 nav ul li a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 1.01em;
-  letter-spacing: 1.2px;
+  color: #fff; text-decoration: none; font-weight: 700;
+  font-family: 'Roboto Mono', monospace; font-size: 1em; letter-spacing: 1.1px;
   transition: color 0.18s;
+  display: block; padding: 6px 2vw;
 }
+nav ul li a:hover { color: #40ffd9; }
 
-nav ul li a:hover {
-  color: #40ffd9;
-}
-
-/* Sections */
 section {
-  max-width: 820px;
-  margin: 35px auto;
-  padding: 32px 24px;
+  max-width: 950px;
+  margin: 32px auto 38px auto;
+  padding: 26px 3vw 24px 3vw;
   background: #15192e;
-  border-radius: 13px;
-  box-shadow: 0 0 20px #1b213b50;
-  transition: box-shadow 0.2s;
-  margin-bottom: 36px;
+  border-radius: 14px;
+  box-shadow: 0 0 18px #1b213b33;
 }
 
 section h2 {
   color: #43c3ff;
   margin-bottom: 16px;
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   border-left: 5px solid #3cc2ff;
   padding-left: 10px;
   font-family: 'Roboto Mono', monospace;
+  display: flex; align-items: center;
+  gap: 8px;
 }
-
-/* Resume Card */
 .resume-card {
-  display: flex;
-  align-items: center;
+  display: flex; align-items: center;
   background: linear-gradient(92deg, #16264b 60%, #223c57 100%);
   border-radius: 12px;
-  box-shadow: 0 0 20px #2c5f91a8;
-  padding: 22px 30px;
+  box-shadow: 0 0 16px #2c5f91a8;
+  padding: 20px 7vw;
   margin: 0 auto;
   max-width: 440px;
   gap: 24px;
 }
-
+@media (max-width: 700px) {.resume-card {flex-direction: column; gap:12px; padding:20px 4vw;}}
 .resume-icon {
   background: #1976d2;
-  color: #fff;
-  font-size: 2.7rem;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  color: #fff; font-size: 2.7rem; border-radius: 50%; width: 60px; height: 60px;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 2px 13px #16264b90;
 }
-
 .resume-link {
   color: #0efb94;
   background: #181b3a;
-  text-decoration: none;
-  font-weight: bold;
-  padding: 10px 16px;
-  margin-top: 10px;
+  text-decoration: none; font-weight: bold;
+  padding: 10px 16px; margin-top: 10px;
   border-radius: 6px;
   box-shadow: 0 1px 10px #30adff33;
   display: inline-block;
@@ -143,232 +107,138 @@ section h2 {
   font-family: 'Roboto Mono', monospace;
   font-size: 1.01em;
 }
-.resume-link:hover {
-  background: #236e57;
-  color: #fff;
-}
+.resume-link:hover { background: #236e57; color: #fff; }
+.resume-btn-label {font-size: 1.09em;}
+.resume-card h3 { margin:0 0 7px 0; color:#ffe066; }
 
-.resume-btn-label {
-  font-size: 1.12em;
-}
-
-.resume-card h3 {
-  margin: 0 0 7px 0;
-  color: #ffe066;
-  font-size: 1.08em;
-}
-
-/* Project Tiles */
-
+/* ===== Responsive & Optimized Project Tiles ===== */
 .project-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
-  gap: 22px;
+  display: flex; flex-wrap: wrap;
+  justify-content: flex-start; gap: 22px;
 }
+@media (max-width: 900px) {.project-grid { gap: 8vw 4vw;  }}
+@media (max-width:600px){.project-grid {justify-content: center;}}
 
 .project-tile {
-  background: linear-gradient(109deg, #161d34 65%, #222642 100%);
+  flex: 1 1 320px;
+  max-width: 370px;
+  min-width: 200px;
+  background: linear-gradient(109deg, #161d34 68%, #222642 100%);
   border: 1.5px solid #1976d2;
-  border-radius: 9px;
-  padding: 20px 17px;
-  box-shadow: 0 2px 12px #23307d33;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  transition: transform 0.15s, box-shadow 0.15s;
-  cursor: pointer;
-  user-select: none;
-  padding-bottom: 8px;
-}
-
-.project-tile:hover {
-  transform: translateY(-2px) scale(1.025);
-  box-shadow: 0 2px 22px #1976d288;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 18px 13px 6px 18px;
+  box-shadow: 0 2px 10px #11427733;
+  display: flex; flex-direction: column;
+  justify-content: flex-start;
+  min-height: 54px;
+  cursor: pointer; position: relative;
+  transition: transform 0.18s, box-shadow 0.23s;
+  overflow: hidden;
 }
 
 .project-tile h3 {
-  margin-bottom: 7px;
-  color: #3cc2ff;
-  font-size: 1.1rem;
-  font-family: 'Roboto Mono', monospace;
+  margin:0 0 4px 0;
+  color:#3cc2ff; font-size: 1.1rem; font-family: 'Roboto Mono', monospace;
+  font-weight: 700; letter-spacing: 1.2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-
-/* Description initially hidden; expands on click */
 .project-tile .desc {
   max-height: 0;
+  opacity: .7;
+  font-size: 1em;
   overflow: hidden;
-  transition: max-height 0.3s ease;
-  color: #aaa;
-  font-size: 0.9rem;
-  margin-bottom: 12px;
+  will-change: max-height, opacity;
+  transition: max-height .27s cubic-bezier(.2,.7,.41,1.2), opacity .25s;
+  padding: 0 2px 0 0;
 }
-
 .project-tile.expanded .desc {
-  max-height: 500px;
-  color: #e1ecff;
+  max-height: 160px;
+  opacity: 1;
+  margin: 7px 0 8px 0;
+  color:#e1ecff;
 }
-
-/* Add New Project Tile */
+.project-tile .edit-btn {
+  pointer-events: auto; cursor: pointer; margin-top: 8px;
+  padding: 7px 15px; align-self: flex-start;
+  background: #1976d2; color: #fff;
+  border: none; border-radius: 5px; font-weight: bold;
+  font-size: .99em; transition: background 0.14s;
+}
+.project-tile .edit-btn:hover { background:#0efb94; color:#222; }
 .project-tile.add-new {
-  align-items: center;
-  justify-content: center;
+  min-height: 60px; align-items:center; justify-content:center;
   background: #101b22;
   border: 2px dashed #43c3ff;
   color: #43c3ff;
   text-align: center;
   cursor: pointer;
   transition: background 0.2s;
+  max-width:350px;
+  margin-bottom:12px;
 }
-.project-tile.add-new span {
-  font-size: 2.1rem;
-  font-weight: bold;
-}
-.project-tile.add-new:hover {
-  background: #16264b;
-}
+.project-tile.add-new span { font-size: 2.1rem; font-weight:700; }
+.project-tile.add-new:hover {background: #16264b; }
+.project-tile:hover:not(.add-new) {transform: scale(1.03) translateY(-2px); box-shadow: 0 8px 18px #1976d299; z-index: 1;}
 
-/* Edit Buttons */
-.edit-btn {
-  padding: 8px 17px;
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  align-self: flex-start;
-  transition: background 0.15s;
-  font-size: 0.98em;
-  margin-top: 6px;
-  pointer-events: auto;
-}
-
-.edit-btn:hover,
-.skill-edit-btn:hover {
-  background: #0efb94;
-  color: #222;
-}
-
-/* Skills Section */
+/* Skills Section - Tag Layout & Responsive */
 .skills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 13px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
+  display: flex; flex-wrap: wrap;
+  gap: 13px; list-style: none; padding: 0; margin: 0; cursor: pointer;
+  align-items: flex-start;
 }
-
 .skills-list li {
   background: #40ffd920;
   color: #0efb94;
   padding: 9px 16px;
-  border-radius: 18px;
-  font-size: 1.03rem;
-  font-weight: 500;
-  font-family: 'Roboto Mono', monospace;
-  transition: background 0.2s, color 0.2s;
+  border-radius: 19px;
+  font-size: 1.05rem;
+  font-family: 'Roboto Mono', monospace; font-weight: 600;
+  transition: background 0.2s, color 0.18s;
+  margin-bottom:4px; box-shadow:0 2px 8px #0efb9440;
 }
-
-.skills-list li:hover {
-  background: #0efb94;
-  color: #222;
-}
-
-/* Compact and Expanded skills */
-#skillsList.compact li {
-  display: none;
-}
-
+.skills-list li:hover { background: #0efb94; color: #222;}
+#skillsList.compact li { display:none;}
 #skillsList.compact::after {
   content: attr(data-summary);
   color: #0efb94;
-  font-weight: bold;
-  font-family: 'Roboto Mono', monospace;
-  cursor: pointer;
-  display: inline-block;
-  padding: 6px 12px;
-  background: #101b22;
-  border-radius: 14px;
-}
-
-#skillsList.expanded li {
-  display: inline-block;
-  cursor: default; /* Override parent's pointer */
-}
-
+  font-weight: bold; font-family: 'Roboto Mono', monospace;
+  display:inline-block; padding: 8px 17px; background: #101b22; border-radius: 17px; cursor:pointer; }
+#skillsList.expanded li { display: inline-block; cursor:default;}
+.edit-btn.skill-edit-btn {margin-left:10px!important;}
 /* Modal Styles */
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  position: fixed; top:0; left:0; width:100vw; height:100vh;
   background-color: rgba(25, 118, 210, 0.41);
   display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
+  justify-content: center; align-items: center; z-index: 2000;
 }
-
 .modal-content {
-  background: #161821;
-  color: #fff;
-  padding: 27px 31px;
-  border-radius: 13px;
-  width: 93%;
-  max-width: 445px;
-  box-shadow: 0 0 25px #0efb9420;
+  background: #161821; color: #fff; padding: 27px 31px; border-radius: 13px;
+  width: 95vw; max-width: 445px; box-shadow: 0 0 25px #0efb9420;
 }
-
-.modal-content input,
-.modal-content textarea {
-  width: 100%;
-  margin-top: 6px;
-  border-radius: 6px;
-  border: 1.7px solid #1976d2;
-  padding: 9px 10px;
-  font-size: 1rem;
-  color: #111a39;
-  background: #e3f2fd;
-  transition: border 0.2s;
-  font-family: 'Roboto', sans-serif;
+.modal-content input, .modal-content textarea {
+  width: 100%; margin-top: 6px; border-radius: 6px; border: 1.7px solid #1976d2;
+  padding: 9px 10px; font-size: 1rem; color: #111a39; background: #e3f2fd;
+  transition: border 0.2s; font-family: 'Roboto', sans-serif;
 }
-
-.modal-content input:focus,
-.modal-content textarea:focus {
+.modal-content input:focus, .modal-content textarea:focus {
   border: 2px solid #0efb94;
   outline: none;
 }
-
-/* Footer */
 footer {
-  text-align: center;
-  color: #40ffd9;
-  background: #000;
-  padding: 20px 0 12px 0;
-  margin-top: 44px;
-  font-size: 1.04rem;
-  border-top: 2px solid #1976d2;
+  text-align: center; color: #40ffd9; background: #000;
+  padding: 20px 0 12px 0; margin-top: 44px;
+  font-size: 1.04rem; border-top: 2px solid #1976d2;
 }
-
-/* LinkedIn link style */
-.linkedin-link {
-  color: #40ffd9;
-  font-weight: bold;
-  text-decoration: none;
-}
-.linkedin-link:hover {
-  text-decoration: underline;
-}
-
-/* Write with me message styling */
+.linkedin-link { color: #40ffd9; font-weight: bold; text-decoration: none; }
+.linkedin-link:hover { text-decoration: underline; }
 .write-with-me {
-  text-align: center;
-  padding: 15px;
-  background: #1976d2;
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.09rem;
+  text-align: center; padding: 15px;
+  background: #1976d2; color: #fff; font-weight: bold; font-size: 1.09rem;
+}
+@media (max-width:480px){
+  section {padding-left:1vw; padding-right:1vw;}
+  .resume-card{padding-left:2vw;padding-right:2vw;}
+  .project-tile, .project-tile.add-new { min-width:160px; max-width:98vw; padding-left:2vw;padding-right:2vw;}
 }

@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Anshuman Cybersecurity Portfolio</title>
+
+  <!-- Firebase Modular SDK init -->
+  <script type="module" src="firebase-init.js"></script>
+
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
 </head>
@@ -52,7 +56,7 @@
   <section id="projects">
     <h2>Projects</h2>
     <div class="project-grid" id="projectGrid">
-      <!-- Dynamic project tiles will be inserted here -->
+      <!-- Project tiles loaded dynamically -->
       <div class="project-tile add-new" id="addNewProject">
         <span>+</span>
         <p>Add New Project</p>
@@ -65,14 +69,12 @@
       Skills
       <button id="editSkillsBtn" class="edit-btn skill-edit-btn">Edit</button>
     </h2>
-    <ul class="skills-list" id="skillsList">
-      <!-- Skills loaded dynamically -->
-    </ul>
+    <ul class="skills-list" id="skillsList"></ul>
   </section>
 
   <section id="contact">
     <h2>Contact</h2>
-    <p><b>Email:</b> anshuman@example.com</p>
+    <p><b>Email:</b> anshuman0124@gmail.com</p>
     <p><b>LinkedIn:</b>
       <a href="https://www.linkedin.com/in/anshuman-00020a193" target="_blank" rel="noopener" class="linkedin-link">
         linkedin.com/in/anshuman-00020a193
@@ -84,7 +86,7 @@
     <p>&copy; 2025 Anshuman Cybersecurity Portfolio</p>
   </footer>
 
-  <!-- Modal for Add/Edit Project -->
+  <!-- Project Modal -->
   <div id="projectModal" class="modal">
     <div class="modal-content">
       <h3 id="modalTitle">Add/Edit Project</h3>
@@ -101,7 +103,7 @@
     </div>
   </div>
 
-  <!-- Modal for Edit Skills -->
+  <!-- Skills Modal -->
   <div id="skillsModal" class="modal">
     <div class="modal-content">
       <h3>Edit Skills</h3>
@@ -114,11 +116,11 @@
     </div>
   </div>
 
-  <!-- Write with me message (hidden by default) -->
+  <!-- Write with me message -->
   <div id="writeWithMe" class="write-with-me" style="display:none;">
     Write with me!
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
