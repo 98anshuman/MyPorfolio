@@ -31,20 +31,22 @@ let editingProjectIndex = null;
 let projectsData = [];
 let skillsData = [];
 
+// Toggle Add/Edit controls visibility based on environment
 function toggleEditUI() {
   if (isGitHubPages) {
     if (addNewBtn) addNewBtn.style.display = "none";
-    document.querySelectorAll(".edit-btn").forEach(btn => (btn.style.display = "none"));
+    document.querySelectorAll(".edit-btn").forEach((btn) => (btn.style.display = "none"));
     if (editSkillsBtn) editSkillsBtn.style.display = "none";
     if (writeWithMeEl) writeWithMeEl.style.display = "block";
   } else {
     if (addNewBtn) addNewBtn.style.display = "";
-    document.querySelectorAll(".edit-btn").forEach(btn => (btn.style.display = ""));
+    document.querySelectorAll(".edit-btn").forEach((btn) => (btn.style.display = ""));
     if (editSkillsBtn) editSkillsBtn.style.display = "";
     if (writeWithMeEl) writeWithMeEl.style.display = "none";
   }
 }
 
+// Fetch projects from Firebase, or default sample when none exist
 async function loadProjects() {
   try {
     const snapshot = await get(ref(db, "projects"));
@@ -53,11 +55,13 @@ async function loadProjects() {
       : [
           {
             title: "Network Vulnerability Scanner",
-            description: "Built an automated scanner for open ports, outdated protocols, and known vulnerabilities across enterprise infrastructure.",
+            description:
+              "Built an automated scanner for open ports, outdated protocols, and known vulnerabilities across enterprise infrastructure.",
           },
           {
             title: "Web Application Security Testing",
-            description: "Found and reported CVSS-9+ vulnerabilities in client web apps; automated scripting for SQLi, XSS, CSRF and business logic flaws.",
+            description:
+              "Found and reported CVSS-9+ vulnerabilities in client web apps; automated scripting for SQLi, XSS, CSRF and business logic flaws.",
           },
         ];
   } catch (err) {
@@ -66,6 +70,7 @@ async function loadProjects() {
   }
 }
 
+// Save all projects to Firebase
 async function saveProjects(projects) {
   try {
     await set(ref(db, "projects"), projects);
@@ -74,6 +79,7 @@ async function saveProjects(projects) {
   }
 }
 
+// Fetch skills from Firebase, or default sample when none exist
 async function loadSkills() {
   try {
     const snapshot = await get(ref(db, "skills"));
@@ -96,6 +102,7 @@ async function loadSkills() {
   }
 }
 
+// Save all skills to Firebase
 async function saveSkills(skills) {
   try {
     await set(ref(db, "skills"), skills);
@@ -104,6 +111,7 @@ async function saveSkills(skills) {
   }
 }
 
+// Create project tile element with conditional edit button
 function createProjectTile(proj, index) {
   const tile = document.createElement("div");
   tile.className = "project-tile";
@@ -114,15 +122,16 @@ function createProjectTile(proj, index) {
     ${!isGitHubPages ? '<button class="edit-btn">Edit</button>' : ''}
   `;
 
-  // Open fullscreen modal on tile click (except when Edit clicked)
+  // Open fullscreen modal on project tile click (except Edit)
   tile.addEventListener("click", (e) => {
     if (e.target.classList.contains("edit-btn")) return;
     detailProjectTitle.textContent = proj.title;
     detailProjectDescription.textContent = proj.description;
     projectDetailModal.style.display = "flex";
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden"; // disable body scroll
   });
 
+  // Bind Edit button for local editing
   if (!isGitHubPages && tile.querySelector(".edit-btn")) {
     tile.querySelector(".edit-btn").addEventListener("click", (evt) => {
       evt.stopPropagation();
@@ -133,12 +142,14 @@ function createProjectTile(proj, index) {
   return tile;
 }
 
+// Render all projects and add "Add New Project" tile if allowed
 function renderProjects() {
   projectGrid.innerHTML = "";
   projectsData.forEach((proj, idx) => projectGrid.appendChild(createProjectTile(proj, idx)));
   if (!isGitHubPages && addNewBtn) projectGrid.appendChild(addNewBtn);
 }
 
+// Render skills list compact or expanded
 function renderSkills(expanded = false) {
   skillsList.innerHTML = "";
   if (expanded) {
@@ -156,11 +167,13 @@ function renderSkills(expanded = false) {
   }
 }
 
+// Toggle skills expand/collapse on click
 skillsList.addEventListener("click", () => {
   if (skillsList.classList.contains("compact")) renderSkills(true);
   else renderSkills(false);
 });
 
+// Open Add/Edit Project modal, fill or clear inputs accordingly
 function openProjectModal(index = null) {
   editingProjectIndex = index;
   if (index !== null && projectsData[index]) {
@@ -175,8 +188,10 @@ function openProjectModal(index = null) {
   modal.style.display = "flex";
 }
 
+// Show Add Project modal on button click
 addNewBtn?.addEventListener("click", () => openProjectModal());
 
+// Save new or edited project on modal Save button
 saveProjectBtn.addEventListener("click", async () => {
   const title = projectTitleInput.value.trim();
   const desc = projectDescInput.value.trim();
@@ -194,14 +209,13 @@ saveProjectBtn.addEventListener("click", async () => {
   await reloadProjects();
 });
 
-cancelProjectBtn.addEventListener("click", () => {
-  modal.style.display = "none";
-});
-
+// Close modal on Cancel or clicking outside modal-content
+cancelProjectBtn.addEventListener("click", () => (modal.style.display = "none"));
 modal.addEventListener("click", (e) => {
   if (e.target === modal) modal.style.display = "none";
 });
 
+// Open Skills modal and prefill textarea
 function openSkillsModal() {
   skillsInput.value = skillsData.join(", ");
   skillsModal.style.display = "flex";
@@ -209,6 +223,7 @@ function openSkillsModal() {
 
 editSkillsBtn?.addEventListener("click", openSkillsModal);
 
+// Save edited skills
 saveSkillsBtn.addEventListener("click", async () => {
   const skillsText = skillsInput.value.trim();
   if (!skillsText) {
@@ -221,16 +236,17 @@ saveSkillsBtn.addEventListener("click", async () => {
   renderSkills(false);
 });
 
+// Close skills modal similarly
 cancelSkillsBtn.addEventListener("click", () => (skillsModal.style.display = "none"));
 skillsModal.addEventListener("click", (e) => {
   if (e.target === skillsModal) skillsModal.style.display = "none";
 });
 
+// Close fullscreen project detail modal
 closeProjectDetailBtn.addEventListener("click", () => {
   projectDetailModal.style.display = "none";
   document.body.style.overflow = "";
 });
-
 projectDetailModal.addEventListener("click", (e) => {
   if (e.target === projectDetailModal) {
     projectDetailModal.style.display = "none";
@@ -238,16 +254,19 @@ projectDetailModal.addEventListener("click", (e) => {
   }
 });
 
+// Reload projects data and render
 async function reloadProjects() {
   projectsData = await loadProjects();
   renderProjects();
 }
 
+// Reload skills data and render
 async function reloadSkills() {
   skillsData = await loadSkills();
   renderSkills(false);
 }
 
+// Initialization: toggle UI & load data
 async function init() {
   toggleEditUI();
   await Promise.all([reloadProjects(), reloadSkills()]);
