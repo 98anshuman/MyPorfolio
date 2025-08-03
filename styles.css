@@ -16,8 +16,8 @@ body {
 header {
   text-align: center;
   padding: 48px 0 20px 0;
-  background: url('header-bg.png') no-repeat center center / cover;
-  color: #fff;
+  background: url('header-bg4.png') no-repeat center center / cover;
+  color: #ffffff;
   border-bottom: 3px solid #1976d2;
   box-shadow: 0 6px 24px #040c22cc;
   position: relative;
@@ -82,15 +82,34 @@ nav ul {
 }
 
 nav ul li a {
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 900;                      /* Much bolder font */
   font-family: 'Roboto Mono', monospace;
-  font-size: 1em;
-  letter-spacing: 1.1px;
-  transition: color 0.18s;
+  font-size: 1.07em;                     /* Slightly larger for extra impact */
+  letter-spacing: 1.2px;
+  transition: color 0.18s, text-shadow 0.28s;
   display: block;
   padding: 6px 2vw;
+
+  /* Strong, multi-layered glow */
+  text-shadow: 
+    0 0 10px #3cc2ff,
+    0 0 24px #3cc2ff,
+    0 0 38px #3cc2ff,
+    0 0 50px #2a60a9,
+    0 0 4px #fff;
+}
+
+/* Extra bold/bright glow on hover */
+nav ul li a:hover {
+  color: #3cc2ff;
+  text-shadow: 
+    0 0 15px #3cc2ff,
+    0 0 35px #54c3ff,
+    0 0 55px #2a60a9,
+    0 0 10px #fff,
+    0 0 5px #3cc2ff;
 }
 
 nav ul li a:hover {
@@ -144,7 +163,7 @@ section h2 {
 
 .resume-icon {
   background: #1976d2;
-  color: #fff;
+  color: #ec0c0c;
   font-size: 2.7rem;
   border-radius: 50%;
   width: 60px;
