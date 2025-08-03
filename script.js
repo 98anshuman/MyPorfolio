@@ -3,115 +3,96 @@ import { db } from "./firebase-init.js";
 
 const isGitHubPages = window.location.hostname.includes("github.io");
 
-const projectGrid = document.getElementById("projectGrid");
-const skillsList = document.getElementById("skillsList");
-const addNewBtn = document.getElementById("addNewProject");
-
-const modal = document.getElementById("projectModal");
-const modalTitle = document.getElementById("modalTitle");
-const projectTitleInput = document.getElementById("projectTitleInput");
-const projectDescInput = document.getElementById("projectDescInput");
-const saveProjectBtn = document.getElementById("saveProjectBtn");
-const cancelProjectBtn = document.getElementById("cancelProjectBtn");
-
-const editSkillsBtn = document.getElementById("editSkillsBtn");
-const skillsModal = document.getElementById("skillsModal");
-const skillsInput = document.getElementById("skillsInput");
-const saveSkillsBtn = document.getElementById("saveSkillsBtn");
-const cancelSkillsBtn = document.getElementById("cancelSkillsBtn");
-
-const writeWithMeEl = document.getElementById("writeWithMe");
-
-const projectDetailModal = document.getElementById("projectDetailModal");
-const detailProjectTitle = document.getElementById("detailProjectTitle");
-const detailProjectDescription = document.getElementById("detailProjectDescription");
-const closeProjectDetailBtn = document.getElementById("closeProjectDetailBtn");
+// Cache DOM references once
+const DOM = {
+  projectGrid: document.getElementById("projectGrid"),
+  skillsList: document.getElementById("skillsList"),
+  addNewBtn: document.getElementById("addNewProject"),
+  modal: document.getElementById("projectModal"),
+  modalTitle: document.getElementById("modalTitle"),
+  projectTitleInput: document.getElementById("projectTitleInput"),
+  projectDescInput: document.getElementById("projectDescInput"),
+  saveProjectBtn: document.getElementById("saveProjectBtn"),
+  cancelProjectBtn: document.getElementById("cancelProjectBtn"),
+  editSkillsBtn: document.getElementById("editSkillsBtn"),
+  skillsModal: document.getElementById("skillsModal"),
+  skillsInput: document.getElementById("skillsInput"),
+  saveSkillsBtn: document.getElementById("saveSkillsBtn"),
+  cancelSkillsBtn: document.getElementById("cancelSkillsBtn"),
+  writeWithMeEl: document.getElementById("writeWithMe"),
+  projectDetailModal: document.getElementById("projectDetailModal"),
+  detailProjectTitle: document.getElementById("detailProjectTitle"),
+  detailProjectDescription: document.getElementById("detailProjectDescription"),
+  closeProjectDetailBtn: document.getElementById("closeProjectDetailBtn"),
+};
 
 let editingProjectIndex = null;
 let projectsData = [];
 let skillsData = [];
 
-// Toggle Add/Edit controls visibility based on environment
+// Toggle Add/Edit controls and "Write with me" message visibility
 function toggleEditUI() {
-  if (isGitHubPages) {
-    if (addNewBtn) addNewBtn.style.display = "none";
-    document.querySelectorAll(".edit-btn").forEach((btn) => (btn.style.display = "none"));
-    if (editSkillsBtn) editSkillsBtn.style.display = "none";
-    if (writeWithMeEl) writeWithMeEl.style.display = "block";
-  } else {
-    if (addNewBtn) addNewBtn.style.display = "";
-    document.querySelectorAll(".edit-btn").forEach((btn) => (btn.style.display = ""));
-    if (editSkillsBtn) editSkillsBtn.style.display = "";
-    if (writeWithMeEl) writeWithMeEl.style.display = "none";
+  const showEdit = !isGitHubPages;
+  if (DOM.addNewBtn) DOM.addNewBtn.style.display = showEdit ? "" : "none";
+  if (DOM.editSkillsBtn) DOM.editSkillsBtn.style.display = showEdit ? "" : "none";
+  DOM.writeWithMeEl.style.display = showEdit ? "none" : "block";
+
+  // Edit buttons inside project tiles (dynamically generated),
+  // so hide/show after render if needed
+  DOM.projectGrid.querySelectorAll(".edit-btn").forEach(btn => {
+    btn.style.display = showEdit ? "" : "none";
+  });
+}
+
+// Async Firebase helpers with default fallback data
+async function loadData(path, defaultData) {
+  try {
+    const snapshot = await get(ref(db, path));
+    return snapshot.exists() ? snapshot.val() : defaultData;
+  } catch (err) {
+    console.error(`Error loading ${path}:`, err);
+    return defaultData;
   }
 }
 
-// Fetch projects from Firebase, or default sample when none exist
+async function saveData(path, data) {
+  try {
+    await set(ref(db, path), data);
+  } catch (err) {
+    console.error(`Error saving ${path}:`, err);
+  }
+}
+
 async function loadProjects() {
-  try {
-    const snapshot = await get(ref(db, "projects"));
-    return snapshot.exists()
-      ? snapshot.val()
-      : [
-          {
-            title: "Network Vulnerability Scanner",
-            description:
-              "Built an automated scanner for open ports, outdated protocols, and known vulnerabilities across enterprise infrastructure.",
-          },
-          {
-            title: "Web Application Security Testing",
-            description:
-              "Found and reported CVSS-9+ vulnerabilities in client web apps; automated scripting for SQLi, XSS, CSRF and business logic flaws.",
-          },
-        ];
-  } catch (err) {
-    console.error("Error loading projects:", err);
-    return [];
-  }
+  return loadData("projects", [
+    {
+      title: "Network Vulnerability Scanner",
+      description: "Built an automated scanner for open ports, outdated protocols, and known vulnerabilities across enterprise infrastructure."
+    },
+    {
+      title: "Web Application Security Testing",
+      description: "Found and reported CVSS-9+ vulnerabilities in client web apps; automated scripting for SQLi, XSS, CSRF and business logic flaws."
+    }
+  ]);
 }
 
-// Save all projects to Firebase
 async function saveProjects(projects) {
-  try {
-    await set(ref(db, "projects"), projects);
-  } catch (err) {
-    console.error("Error saving projects:", err);
-  }
+  return saveData("projects", projects);
 }
 
-// Fetch skills from Firebase, or default sample when none exist
 async function loadSkills() {
-  try {
-    const snapshot = await get(ref(db, "skills"));
-    return snapshot.exists()
-      ? snapshot.val()
-      : [
-          "Penetration Testing",
-          "Network Security",
-          "SIEM Operations",
-          "Incident Response",
-          "Python & Bash Scripting",
-          "Cryptography",
-          "Cloud Security (AWS/Azure)",
-          "Threat Intelligence",
-          "Malware Analysis",
-        ];
-  } catch (err) {
-    console.error("Error loading skills:", err);
-    return [];
-  }
+  return loadData("skills", [
+    "Penetration Testing", "Network Security", "SIEM Operations", "Incident Response",
+    "Python & Bash Scripting", "Cryptography", "Cloud Security (AWS/Azure)",
+    "Threat Intelligence", "Malware Analysis"
+  ]);
 }
 
-// Save all skills to Firebase
 async function saveSkills(skills) {
-  try {
-    await set(ref(db, "skills"), skills);
-  } catch (err) {
-    console.error("Error saving skills:", err);
-  }
+  return saveData("skills", skills);
 }
 
-// Create project tile element with conditional edit button
+// Create project tile with conditional edit button and click handlers
 function createProjectTile(proj, index) {
   const tile = document.createElement("div");
   tile.className = "project-tile";
@@ -122,154 +103,165 @@ function createProjectTile(proj, index) {
     ${!isGitHubPages ? '<button class="edit-btn">Edit</button>' : ''}
   `;
 
-  // Open fullscreen modal on project tile click (except Edit)
-  tile.addEventListener("click", (e) => {
+  // Click on tile opens fullscreen detail modal except on edit button clicks
+  tile.addEventListener("click", e => {
     if (e.target.classList.contains("edit-btn")) return;
-    detailProjectTitle.textContent = proj.title;
-    detailProjectDescription.textContent = proj.description;
-    projectDetailModal.style.display = "flex";
-    document.body.style.overflow = "hidden"; // disable body scroll
+    DOM.detailProjectTitle.textContent = proj.title;
+    DOM.detailProjectDescription.textContent = proj.description;
+    DOM.projectDetailModal.style.display = "flex";
+    document.body.style.overflow = "hidden";
   });
 
-  // Bind Edit button for local editing
-  if (!isGitHubPages && tile.querySelector(".edit-btn")) {
-    tile.querySelector(".edit-btn").addEventListener("click", (evt) => {
-      evt.stopPropagation();
-      openProjectModal(index);
-    });
+  // Edit button click opens edit modal locally
+  if (!isGitHubPages) {
+    const editBtn = tile.querySelector(".edit-btn");
+    if (editBtn) {
+      editBtn.addEventListener("click", evt => {
+        evt.stopPropagation();
+        openProjectModal(index);
+      });
+    }
   }
 
   return tile;
 }
 
-// Render all projects and add "Add New Project" tile if allowed
 function renderProjects() {
-  projectGrid.innerHTML = "";
-  projectsData.forEach((proj, idx) => projectGrid.appendChild(createProjectTile(proj, idx)));
-  if (!isGitHubPages && addNewBtn) projectGrid.appendChild(addNewBtn);
+  DOM.projectGrid.innerHTML = "";
+  projectsData.forEach((proj, idx) => {
+    DOM.projectGrid.appendChild(createProjectTile(proj, idx));
+  });
+  if (!isGitHubPages && DOM.addNewBtn) DOM.projectGrid.appendChild(DOM.addNewBtn);
+
+  // After rendering, toggle edit buttons visibility (for safety)
+  toggleEditUI();
 }
 
-// Render skills list compact or expanded
 function renderSkills(expanded = false) {
-  skillsList.innerHTML = "";
+  DOM.skillsList.innerHTML = "";
   if (expanded) {
-    skillsList.classList.remove("compact");
-    skillsList.classList.add("expanded");
-    skillsData.forEach((skill) => {
+    DOM.skillsList.classList.remove("compact");
+    DOM.skillsList.classList.add("expanded");
+    skillsData.forEach(skill => {
       const li = document.createElement("li");
       li.textContent = skill;
-      skillsList.appendChild(li);
+      DOM.skillsList.appendChild(li);
     });
   } else {
-    skillsList.classList.add("compact");
-    skillsList.classList.remove("expanded");
-    skillsList.setAttribute("data-summary", `${skillsData.length} skills (click to expand)`);
+    DOM.skillsList.classList.add("compact");
+    DOM.skillsList.classList.remove("expanded");
+    DOM.skillsList.setAttribute("data-summary", `${skillsData.length} skills (click to expand)`);
   }
 }
 
-// Toggle skills expand/collapse on click
-skillsList.addEventListener("click", () => {
-  if (skillsList.classList.contains("compact")) renderSkills(true);
-  else renderSkills(false);
+// Toggle skills expanded/compact mode on click
+DOM.skillsList.addEventListener("click", () => {
+  const isCompact = DOM.skillsList.classList.contains("compact");
+  renderSkills(!isCompact);
 });
 
-// Open Add/Edit Project modal, fill or clear inputs accordingly
+// Show the add/edit project modal in add or edit mode
 function openProjectModal(index = null) {
   editingProjectIndex = index;
   if (index !== null && projectsData[index]) {
-    modalTitle.textContent = "Edit Project";
-    projectTitleInput.value = projectsData[index].title;
-    projectDescInput.value = projectsData[index].description;
+    DOM.modalTitle.textContent = "Edit Project";
+    DOM.projectTitleInput.value = projectsData[index].title;
+    DOM.projectDescInput.value = projectsData[index].description;
   } else {
-    modalTitle.textContent = "Add New Project";
-    projectTitleInput.value = "";
-    projectDescInput.value = "";
+    DOM.modalTitle.textContent = "Add New Project";
+    DOM.projectTitleInput.value = "";
+    DOM.projectDescInput.value = "";
   }
-  modal.style.display = "flex";
+  DOM.modal.style.display = "flex";
 }
 
-// Show Add Project modal on button click
-addNewBtn?.addEventListener("click", () => openProjectModal());
+// Event handler: open add new project modal
+DOM.addNewBtn?.addEventListener("click", () => openProjectModal());
 
-// Save new or edited project on modal Save button
-saveProjectBtn.addEventListener("click", async () => {
-  const title = projectTitleInput.value.trim();
-  const desc = projectDescInput.value.trim();
-  if (!title || !desc) {
+// Event handler: save project changes
+DOM.saveProjectBtn.addEventListener("click", async () => {
+  const title = DOM.projectTitleInput.value.trim();
+  const description = DOM.projectDescInput.value.trim();
+
+  if (!title || !description) {
     alert("Please fill in both fields.");
     return;
   }
   if (editingProjectIndex !== null) {
-    projectsData[editingProjectIndex] = { title, description: desc };
+    projectsData[editingProjectIndex] = { title, description };
   } else {
-    projectsData.push({ title, description: desc });
+    projectsData.push({ title, description });
   }
   await saveProjects(projectsData);
-  modal.style.display = "none";
+  DOM.modal.style.display = "none";
   await reloadProjects();
 });
 
-// Close modal on Cancel or clicking outside modal-content
-cancelProjectBtn.addEventListener("click", () => (modal.style.display = "none"));
-modal.addEventListener("click", (e) => {
-  if (e.target === modal) modal.style.display = "none";
+// Event handler: cancel project modal
+DOM.cancelProjectBtn.addEventListener("click", () => (DOM.modal.style.display = "none"));
+
+// Close modal when clicking outside modal content
+DOM.modal.addEventListener("click", e => {
+  if (e.target === DOM.modal) DOM.modal.style.display = "none";
 });
 
-// Open Skills modal and prefill textarea
+// Open the skills edit modal with current skills
 function openSkillsModal() {
-  skillsInput.value = skillsData.join(", ");
-  skillsModal.style.display = "flex";
+  DOM.skillsInput.value = skillsData.join(", ");
+  DOM.skillsModal.style.display = "flex";
 }
 
-editSkillsBtn?.addEventListener("click", openSkillsModal);
+// Edit skills button handler
+DOM.editSkillsBtn?.addEventListener("click", openSkillsModal);
 
-// Save edited skills
-saveSkillsBtn.addEventListener("click", async () => {
-  const skillsText = skillsInput.value.trim();
+// Save skills changes
+DOM.saveSkillsBtn.addEventListener("click", async () => {
+  const skillsText = DOM.skillsInput.value.trim();
   if (!skillsText) {
     alert("Please enter at least one skill.");
     return;
   }
-  skillsData = skillsText.split(",").map((s) => s.trim()).filter(Boolean);
+  skillsData = skillsText.split(",").map(s => s.trim()).filter(Boolean);
   await saveSkills(skillsData);
-  skillsModal.style.display = "none";
+  DOM.skillsModal.style.display = "none";
   renderSkills(false);
 });
 
-// Close skills modal similarly
-cancelSkillsBtn.addEventListener("click", () => (skillsModal.style.display = "none"));
-skillsModal.addEventListener("click", (e) => {
-  if (e.target === skillsModal) skillsModal.style.display = "none";
+// Cancel skills modal
+DOM.cancelSkillsBtn.addEventListener("click", () => (DOM.skillsModal.style.display = "none"));
+DOM.skillsModal.addEventListener("click", e => {
+  if (e.target === DOM.skillsModal) DOM.skillsModal.style.display = "none";
 });
 
-// Close fullscreen project detail modal
-closeProjectDetailBtn.addEventListener("click", () => {
-  projectDetailModal.style.display = "none";
+// Close fullscreen project detail modal, restore scrolling
+DOM.closeProjectDetailBtn.addEventListener("click", () => {
+  DOM.projectDetailModal.style.display = "none";
   document.body.style.overflow = "";
 });
-projectDetailModal.addEventListener("click", (e) => {
-  if (e.target === projectDetailModal) {
-    projectDetailModal.style.display = "none";
+DOM.projectDetailModal.addEventListener("click", e => {
+  if (e.target === DOM.projectDetailModal) {
+    DOM.projectDetailModal.style.display = "none";
     document.body.style.overflow = "";
   }
 });
 
-// Reload projects data and render
+// Reload projects from Firebase and render UI
 async function reloadProjects() {
   projectsData = await loadProjects();
   renderProjects();
 }
 
-// Reload skills data and render
+// Reload skills from Firebase and render UI
 async function reloadSkills() {
   skillsData = await loadSkills();
   renderSkills(false);
 }
 
-// Initialization: toggle UI & load data
+// Initialization function to prepare UI and fetch data
 async function init() {
-  toggleEditUI();
+  toggleEditUI(); // show/hide UI properly
   await Promise.all([reloadProjects(), reloadSkills()]);
 }
 
+// Start everything
 init();
