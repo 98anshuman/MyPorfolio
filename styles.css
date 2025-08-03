@@ -16,7 +16,7 @@ body {
 header {
   text-align: center;
   padding: 48px 0 20px 0;
-  background: url('header-bg4.png') no-repeat center center / cover;
+  background: url('header-bg.png') no-repeat center center / cover;
   color: #ffffff;
   border-bottom: 3px solid #1976d2;
   box-shadow: 0 6px 24px #040c22cc;
