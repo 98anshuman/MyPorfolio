@@ -3,7 +3,6 @@ import { db } from "./firebase-init.js";
 
 const isGitHubPages = window.location.hostname.includes("github.io");
 
-// Cache DOM references once
 const DOM = {
   projectGrid: document.getElementById("projectGrid"),
   skillsList: document.getElementById("skillsList"),
@@ -30,21 +29,13 @@ let editingProjectIndex = null;
 let projectsData = [];
 let skillsData = [];
 
-// Toggle Add/Edit controls and "Write with me" message visibility
 function toggleEditUI() {
   const showEdit = !isGitHubPages;
   if (DOM.addNewBtn) DOM.addNewBtn.style.display = showEdit ? "" : "none";
   if (DOM.editSkillsBtn) DOM.editSkillsBtn.style.display = showEdit ? "" : "none";
   DOM.writeWithMeEl.style.display = showEdit ? "none" : "block";
-
-  // Edit buttons inside project tiles (dynamically generated),
-  // so hide/show after render if needed
-  DOM.projectGrid.querySelectorAll(".edit-btn").forEach(btn => {
-    btn.style.display = showEdit ? "" : "none";
-  });
 }
 
-// Async Firebase helpers with default fallback data
 async function loadData(path, defaultData) {
   try {
     const snapshot = await get(ref(db, path));
@@ -92,19 +83,17 @@ async function saveSkills(skills) {
   return saveData("skills", skills);
 }
 
-// Create project tile with conditional edit button and click handlers
 function createProjectTile(proj, index) {
   const tile = document.createElement("div");
   tile.className = "project-tile";
 
   tile.innerHTML = `
     <h3>${proj.title}</h3>
-    <div class="desc" style="display:none;">${proj.description}</div>
+    <div class="desc">${proj.description}</div>
     ${!isGitHubPages ? '<button class="edit-btn">Edit</button>' : ''}
   `;
 
-  // Click on tile opens fullscreen detail modal except on edit button clicks
-  tile.addEventListener("click", e => {
+  tile.addEventListener("click", (e) => {
     if (e.target.classList.contains("edit-btn")) return;
     DOM.detailProjectTitle.textContent = proj.title;
     DOM.detailProjectDescription.textContent = proj.description;
@@ -112,15 +101,11 @@ function createProjectTile(proj, index) {
     document.body.style.overflow = "hidden";
   });
 
-  // Edit button click opens edit modal locally
-  if (!isGitHubPages) {
-    const editBtn = tile.querySelector(".edit-btn");
-    if (editBtn) {
-      editBtn.addEventListener("click", evt => {
-        evt.stopPropagation();
-        openProjectModal(index);
-      });
-    }
+  if (!isGitHubPages && tile.querySelector(".edit-btn")) {
+    tile.querySelector(".edit-btn").addEventListener("click", evt => {
+      evt.stopPropagation();
+      openProjectModal(index);
+    });
   }
 
   return tile;
@@ -128,12 +113,8 @@ function createProjectTile(proj, index) {
 
 function renderProjects() {
   DOM.projectGrid.innerHTML = "";
-  projectsData.forEach((proj, idx) => {
-    DOM.projectGrid.appendChild(createProjectTile(proj, idx));
-  });
+  projectsData.forEach((proj, idx) => DOM.projectGrid.appendChild(createProjectTile(proj, idx)));
   if (!isGitHubPages && DOM.addNewBtn) DOM.projectGrid.appendChild(DOM.addNewBtn);
-
-  // After rendering, toggle edit buttons visibility (for safety)
   toggleEditUI();
 }
 
@@ -154,13 +135,10 @@ function renderSkills(expanded = false) {
   }
 }
 
-// Toggle skills expanded/compact mode on click
 DOM.skillsList.addEventListener("click", () => {
-  const isCompact = DOM.skillsList.classList.contains("compact");
-  renderSkills(!isCompact);
+  renderSkills(DOM.skillsList.classList.contains("compact"));
 });
 
-// Show the add/edit project modal in add or edit mode
 function openProjectModal(index = null) {
   editingProjectIndex = index;
   if (index !== null && projectsData[index]) {
@@ -175,10 +153,8 @@ function openProjectModal(index = null) {
   DOM.modal.style.display = "flex";
 }
 
-// Event handler: open add new project modal
 DOM.addNewBtn?.addEventListener("click", () => openProjectModal());
 
-// Event handler: save project changes
 DOM.saveProjectBtn.addEventListener("click", async () => {
   const title = DOM.projectTitleInput.value.trim();
   const description = DOM.projectDescInput.value.trim();
@@ -192,29 +168,24 @@ DOM.saveProjectBtn.addEventListener("click", async () => {
   } else {
     projectsData.push({ title, description });
   }
+
   await saveProjects(projectsData);
   DOM.modal.style.display = "none";
   await reloadProjects();
 });
 
-// Event handler: cancel project modal
 DOM.cancelProjectBtn.addEventListener("click", () => (DOM.modal.style.display = "none"));
-
-// Close modal when clicking outside modal content
 DOM.modal.addEventListener("click", e => {
   if (e.target === DOM.modal) DOM.modal.style.display = "none";
 });
 
-// Open the skills edit modal with current skills
 function openSkillsModal() {
   DOM.skillsInput.value = skillsData.join(", ");
   DOM.skillsModal.style.display = "flex";
 }
 
-// Edit skills button handler
 DOM.editSkillsBtn?.addEventListener("click", openSkillsModal);
 
-// Save skills changes
 DOM.saveSkillsBtn.addEventListener("click", async () => {
   const skillsText = DOM.skillsInput.value.trim();
   if (!skillsText) {
@@ -227,13 +198,11 @@ DOM.saveSkillsBtn.addEventListener("click", async () => {
   renderSkills(false);
 });
 
-// Cancel skills modal
 DOM.cancelSkillsBtn.addEventListener("click", () => (DOM.skillsModal.style.display = "none"));
 DOM.skillsModal.addEventListener("click", e => {
   if (e.target === DOM.skillsModal) DOM.skillsModal.style.display = "none";
 });
 
-// Close fullscreen project detail modal, restore scrolling
 DOM.closeProjectDetailBtn.addEventListener("click", () => {
   DOM.projectDetailModal.style.display = "none";
   document.body.style.overflow = "";
@@ -245,23 +214,19 @@ DOM.projectDetailModal.addEventListener("click", e => {
   }
 });
 
-// Reload projects from Firebase and render UI
 async function reloadProjects() {
   projectsData = await loadProjects();
   renderProjects();
 }
 
-// Reload skills from Firebase and render UI
 async function reloadSkills() {
   skillsData = await loadSkills();
   renderSkills(false);
 }
 
-// Initialization function to prepare UI and fetch data
 async function init() {
-  toggleEditUI(); // show/hide UI properly
+  toggleEditUI();
   await Promise.all([reloadProjects(), reloadSkills()]);
 }
 
-// Start everything
 init();

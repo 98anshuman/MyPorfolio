@@ -1,16 +1,15 @@
-/* ==== Base Styles ==== */
+/* Base styles */
 body {
   background: #10142a;
   color: #e2f2fd;
   font-family: 'Roboto', 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   min-height: 100vh;
   font-size: 1.07rem;
   letter-spacing: 0.01em;
 }
 
-/* ==== Header & Avatar ==== */
+/* Header and avatar */
 header {
   text-align: center;
   padding: 48px 0 20px 0;
@@ -50,6 +49,7 @@ header {
   box-shadow: 0 0 22px #12144888;
   transition: box-shadow 0.3s ease;
 }
+
 .avatar-container:hover .avatar {
   box-shadow: 0 0 36px #3cc2ff;
 }
@@ -77,7 +77,7 @@ header h1 {
   letter-spacing: 1.5px;
 }
 
-/* ==== Navigation ==== */
+/* Navigation */
 nav ul {
   list-style: none;
   display: flex;
@@ -116,7 +116,7 @@ nav ul li a:hover {
     0 0 5px #3cc2ff;
 }
 
-/* ==== Sections ==== */
+/* Sections */
 section {
   max-width: 960px;
   margin: 32px auto 38px auto;
@@ -138,7 +138,7 @@ section h2 {
   gap: 7px;
 }
 
-/* ==== Resume Card ==== */
+/* Resume card */
 .resume-card {
   display: flex;
   align-items: center;
@@ -198,7 +198,7 @@ section h2 {
   margin: 0 0 6px 0;
 }
 
-/* ==== Projects Section ==== */
+/* Projects */
 .project-grid {
   display: flex;
   flex-wrap: wrap;
@@ -233,7 +233,9 @@ section h2 {
   flex-direction: column;
   cursor: pointer;
   position: relative;
-  min-height: 54px;
+  min-height: auto; /* allow height to grow */
+  overflow: visible;
+  word-break: break-word;
 }
 
 .project-tile:hover:not(.add-new) {
@@ -254,9 +256,21 @@ section h2 {
   line-height: 1.25;
 }
 
-/* Hide small desc since we use full modal for details */
 .project-tile .desc {
-  display: none;
+  display: block;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  color: #e2f2fd;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
+  border-radius: 7px;
+  min-height: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .project-tile .edit-btn {
@@ -302,15 +316,13 @@ section h2 {
   background: #16264b;
 }
 
-/* ==== Fullscreen Project Detail Modal ==== */
+/* Fullscreen Project Detail Modal */
 .fullscreen-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   background-color: rgba(0,0,0,0.85);
-  display: none; /* hidden initially */
+  display: none;
   justify-content: center;
   align-items: center;
   z-index: 5000;
@@ -379,7 +391,7 @@ section h2 {
   }
 }
 
-/* ==== Skills Section ==== */
+/* Skills Section */
 .skills-list {
   display: flex;
   flex-wrap: wrap;
@@ -435,13 +447,11 @@ section h2 {
   margin-left: 10px !important;
 }
 
-/* ==== Modal for Add/Edit ==== */
+/* Modals for Add/Edit */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   background-color: rgba(25, 118, 210, 0.41);
   display: none;
   justify-content: center;
@@ -479,7 +489,7 @@ section h2 {
   outline: none;
 }
 
-/* ==== Footer ==== */
+/* Footer */
 footer {
   text-align: center;
   color: #40ffd9;
@@ -495,7 +505,6 @@ footer {
   font-weight: bold;
   text-decoration: none;
 }
-
 .linkedin-link:hover {
   text-decoration: underline;
 }
@@ -509,7 +518,7 @@ footer {
   font-size: 1.10rem;
 }
 
-/* ==== Responsive tweaks ==== */
+/* Responsive tweaks */
 @media (max-width: 480px) {
   section {
     padding-left: 1vw;
