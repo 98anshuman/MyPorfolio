@@ -565,19 +565,21 @@ section h2 {
 /* Modern Skills Grid */
 .skills-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: clamp(0.5rem, 2vw, 1rem);
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .skills-list li {
   background: #40ffd920;
   color: #0efb94;
-  padding: 9px 16px;
-  border-radius: 19px;
-  font-size: 1.08rem;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: clamp(0.85rem, 2.5vw, 1.08rem);
   font-family: 'Roboto Mono', monospace;
   font-weight: 600;
   transition: all 0.2s ease;
@@ -588,6 +590,9 @@ section h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  word-break: break-word;
+  min-height: 36px;
+  box-sizing: border-box;
 }
 
 .skills-list li:hover {
@@ -611,9 +616,9 @@ section h2 {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -622,7 +627,8 @@ section h2 {
   transition: all 0.2s ease;
   opacity: 0;
   transform: scale(0.8);
-  margin-left: 8px;
+  margin-left: 6px;
+  flex-shrink: 0;
 }
 
 .skill-item:hover .skill-delete-btn {
@@ -1213,13 +1219,22 @@ button,
   }
   
   .skills-list {
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-    gap: 0.4rem;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
   }
   
   .skills-list li {
-    padding: 6px 10px;
-    font-size: 0.9rem;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+    border-radius: 12px;
+    min-height: 32px;
+  }
+  
+  .skill-delete-btn {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    margin-left: 4px;
   }
   
   .modal-content {
@@ -1249,7 +1264,13 @@ button,
   }
   
   .skills-list {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.6rem;
+  }
+  
+  .skills-list li {
+    font-size: 0.9rem;
+    padding: 7px 10px;
   }
   
   .resume-card {
@@ -1323,7 +1344,8 @@ button,
   }
   
   .skills-list {
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.8rem;
   }
 }
 
