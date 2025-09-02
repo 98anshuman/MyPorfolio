@@ -12,6 +12,9 @@
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
+  
+  <!-- PDF-lib for client-side PDF merging -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </head>
 <body>
 
@@ -23,11 +26,17 @@
     </div>
     <h1>Anshuman<br /><span class="cyber-glow">Cybersecurity Engineer</span></h1>
     <nav>
-      <ul>
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul id="navMenu">
         <li><a href="#about">About Me</a></li>
         <li><a href="#resume">Resume</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#skills">Skills</a></li>
+        <li><a href="#" id="pdfMergeLink">PDF Merge</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -118,9 +127,50 @@
   <!-- Fullscreen Project Detail Modal -->
   <div id="projectDetailModal" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="detailProjectTitle" tabindex="-1" style="display:none;">
     <div class="fullscreen-modal-content">
-      <button id="closeProjectDetailBtn" class="close-btn" aria-label="Close project details">&times;</button>
-      <h2 id="detailProjectTitle"></h2>
-      <p id="detailProjectDescription"></p>
+      <div class="project-detail-header">
+        <div class="project-nav">
+          <button id="backToProjectsBtn" class="back-btn">
+            <span>←</span> Back to Projects
+          </button>
+          <button id="closeProjectDetailBtn" class="close-btn" aria-label="Close project details">&times;</button>
+        </div>
+        <h1 id="detailProjectTitle" class="project-detail-title"></h1>
+      </div>
+      <div class="project-detail-body">
+        <div class="project-description">
+          <h3>Project Description</h3>
+          <p id="detailProjectDescription"></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Merge Modal -->
+  <div id="pdfMergeModal" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="pdfMergeTitle" tabindex="-1" style="display:none;">
+    <div class="fullscreen-modal-content">
+      <div class="project-detail-header">
+        <div class="project-nav">
+          <button id="backFromPdfMergeBtn" class="back-btn">
+            <span>←</span> Back to Portfolio
+          </button>
+          <button id="closePdfMergeBtn" class="close-btn" aria-label="Close PDF Merge">&times;</button>
+        </div>
+        <h1 id="pdfMergeTitle" class="project-detail-title">PDF Merge Tool</h1>
+      </div>
+      <div class="project-detail-body">
+        <div class="pdf-merge-container">
+          <div class="upload-section">
+            <h3>Select PDF Files to Merge</h3>
+            <input type="file" id="pdfFileInput" multiple accept=".pdf" class="file-input">
+            <div class="file-list" id="fileList"></div>
+          </div>
+          <div class="merge-section">
+            <button id="mergePdfBtn" class="merge-btn" disabled>Merge PDFs</button>
+            <div id="mergeStatus" class="merge-status"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
