@@ -1,0 +1,24 @@
+{
+  "name": "Anshuman Cybersecurity Portfolio",
+  "short_name": "Portfolio",
+  "description": "Professional cybersecurity engineer portfolio with projects and skills showcase",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#10142a",
+  "theme_color": "#3cc2ff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["portfolio", "professional", "cybersecurity"],
+  "lang": "en-US"
+}

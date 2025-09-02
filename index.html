@@ -2,11 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Anshuman Cybersecurity Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Professional cybersecurity engineer portfolio showcasing projects, skills, and expertise in endpoint protection, threat detection, and security automation." />
+  <meta name="keywords" content="cybersecurity, security engineer, penetration testing, threat detection, KQL, Microsoft Defender, Azure AD, Intune" />
+  <meta name="author" content="Anshuman" />
+  <meta name="robots" content="index, follow" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Anshuman - Cybersecurity Engineer Portfolio" />
+  <meta property="og:description" content="Professional cybersecurity engineer specializing in endpoint protection, threat detection, and security automation." />
+  <meta property="og:image" content="/no_bg.png" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:title" content="Anshuman - Cybersecurity Engineer Portfolio" />
+  <meta property="twitter:description" content="Professional cybersecurity engineer specializing in endpoint protection, threat detection, and security automation." />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#3cc2ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Portfolio" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+  
+  <title>Anshuman - Cybersecurity Engineer Portfolio</title>
 
-
-
+  <!-- Preload critical resources -->
+  <link rel="preload" href="styles.css" as="style" />
+  <link rel="preload" href="no_bg.png" as="image" />
+  
   <!-- Link to CSS -->
   <link rel="stylesheet" href="styles.css" />
 
@@ -15,6 +44,15 @@
   
   <!-- PDF-lib for client-side PDF merging -->
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  
+  <!-- Performance optimizations -->
+  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="//unpkg.com" />
+  
+  <!-- Security headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
 </head>
 <body>
 
@@ -30,13 +68,13 @@
         <span></span>
         <span></span>
         <span></span>
+        <span class="menu-text">Click Here</span>
       </button>
       <ul id="navMenu">
         <li><a href="#about">About Me</a></li>
         <li><a href="#resume">Resume</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#skills">Skills</a></li>
-        <li><a href="#" id="pdfMergeLink">PDF Merge</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -93,6 +131,27 @@
       <a href="https://www.linkedin.com/in/anshuman-00020a193" target="_blank" rel="noopener" class="linkedin-link">linkedin.com/in/anshuman-00020a193</a>
     </p>
   </section>
+
+  <!-- Floating PDF Merge Button -->
+  <div class="pdf-merge-fab" id="pdfMergeLink" title="PDF Merge Tool">
+    <div class="fab-icon">📄</div>
+    <span class="fab-text">PDF Merge</span>
+    <div class="fab-overlay-text">PDF MERGE</div>
+  </div>
+
+  <!-- Floating PDF Scanner Button -->
+  <div class="pdf-scanner-fab" id="pdfScannerLink" title="Image to PDF Converter">
+    <div class="fab-icon">📷</div>
+    <span class="fab-text">Image to PDF</span>
+    <div class="fab-overlay-text">IMG TO PDF</div>
+  </div>
+
+  <!-- Floating Camera Scanner Button -->
+  <div class="camera-scanner-fab" id="cameraScannerLink" title="Camera Scanner">
+    <div class="fab-icon">📱</div>
+    <span class="fab-text">Camera Scan</span>
+    <div class="fab-overlay-text">CAM SCAN</div>
+  </div>
 
   <footer>
     <p>&copy; 2025 Anshuman Cybersecurity Portfolio</p>
@@ -168,6 +227,68 @@
           <div class="merge-section">
             <button id="mergePdfBtn" class="merge-btn" disabled>Merge PDFs</button>
             <div id="mergeStatus" class="merge-status"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Scanner Modal -->
+  <div id="pdfScannerModal" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="pdfScannerTitle" tabindex="-1" style="display:none;">
+    <div class="fullscreen-modal-content">
+      <div class="project-detail-header">
+        <div class="project-nav">
+          <button id="backFromPdfScannerBtn" class="back-btn">
+            <span>←</span> Back to Portfolio
+          </button>
+          <button id="closePdfScannerBtn" class="close-btn" aria-label="Close PDF Scanner">&times;</button>
+        </div>
+        <h1 id="pdfScannerTitle" class="project-detail-title">Image to PDF Converter</h1>
+      </div>
+      <div class="project-detail-body">
+        <div class="pdf-scanner-container">
+          <div class="upload-section">
+            <h3>Convert Images to PDF</h3>
+            <input type="file" id="scanFileInput" multiple accept="image/*" class="file-input">
+            <div class="scan-preview" id="scanPreview"></div>
+          </div>
+          <div class="scan-section">
+            <button id="scanToPdfBtn" class="merge-btn" disabled>Create PDF</button>
+            <div id="scanStatus" class="merge-status"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Camera Scanner Modal -->
+  <div id="cameraScannerModal" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="cameraScannerTitle" tabindex="-1" style="display:none;">
+    <div class="fullscreen-modal-content">
+      <div class="project-detail-header">
+        <div class="project-nav">
+          <button id="backFromCameraScannerBtn" class="back-btn">
+            <span>←</span> Back to Portfolio
+          </button>
+          <button id="closeCameraScannerBtn" class="close-btn" aria-label="Close Camera Scanner">&times;</button>
+        </div>
+        <h1 id="cameraScannerTitle" class="project-detail-title">Camera Scanner</h1>
+      </div>
+      <div class="project-detail-body">
+        <div class="camera-scanner-container">
+          <div class="camera-section">
+            <h3>Scan Documents with Camera</h3>
+            <video id="cameraVideo" class="camera-video" autoplay playsinline style="display:none;"></video>
+            <canvas id="cameraCanvas" class="camera-canvas" style="display:none;"></canvas>
+            <div class="camera-controls">
+              <button id="startCameraBtn" class="merge-btn">Start Camera</button>
+              <button id="captureBtn" class="merge-btn" disabled style="display:none;">Capture Photo</button>
+              <button id="stopCameraBtn" class="merge-btn" disabled style="display:none;">Stop Camera</button>
+            </div>
+          </div>
+          <div class="captured-images" id="capturedImages"></div>
+          <div class="scan-section">
+            <button id="createPdfFromCameraBtn" class="merge-btn" disabled>Create PDF</button>
+            <div id="cameraStatus" class="merge-status"></div>
           </div>
         </div>
       </div>

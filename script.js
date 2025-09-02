@@ -30,6 +30,26 @@ const DOM = {
   fileList: document.getElementById("fileList"),
   mergePdfBtn: document.getElementById("mergePdfBtn"),
   mergeStatus: document.getElementById("mergeStatus"),
+  pdfScannerLink: document.getElementById("pdfScannerLink"),
+  pdfScannerModal: document.getElementById("pdfScannerModal"),
+  closePdfScannerBtn: document.getElementById("closePdfScannerBtn"),
+  backFromPdfScannerBtn: document.getElementById("backFromPdfScannerBtn"),
+  scanFileInput: document.getElementById("scanFileInput"),
+  scanPreview: document.getElementById("scanPreview"),
+  scanToPdfBtn: document.getElementById("scanToPdfBtn"),
+  scanStatus: document.getElementById("scanStatus"),
+  cameraScannerLink: document.getElementById("cameraScannerLink"),
+  cameraScannerModal: document.getElementById("cameraScannerModal"),
+  closeCameraScannerBtn: document.getElementById("closeCameraScannerBtn"),
+  backFromCameraScannerBtn: document.getElementById("backFromCameraScannerBtn"),
+  cameraVideo: document.getElementById("cameraVideo"),
+  cameraCanvas: document.getElementById("cameraCanvas"),
+  startCameraBtn: document.getElementById("startCameraBtn"),
+  captureBtn: document.getElementById("captureBtn"),
+  stopCameraBtn: document.getElementById("stopCameraBtn"),
+  capturedImages: document.getElementById("capturedImages"),
+  createPdfFromCameraBtn: document.getElementById("createPdfFromCameraBtn"),
+  cameraStatus: document.getElementById("cameraStatus"),
 };
 
 let editingProjectIndex = null;
@@ -37,7 +57,33 @@ let projectsData = [];
 let skillsData = [];
 
 // Check if running in development mode
-const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const isDevelopment = window.location.hostname === 'localhost' || 
+                     window.location.hostname === '127.0.0.1' || 
+                     window.location.hostname === '' ||
+                     window.location.protocol === 'file:';
+
+// Performance and error tracking
+const performance = {
+  startTime: Date.now(),
+  errors: [],
+  logError: (error, context) => {
+    console.error(`Error in ${context}:`, error);
+    performance.errors.push({ error: error.message, context, timestamp: Date.now() });
+  }
+};
+
+// Debounce utility for performance
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 async function loadProjects() {
   return await DataManager.loadProjects();
@@ -94,10 +140,28 @@ function renderSkills() {
 }
 
 function renderProjects() {
-  DOM.projectGrid.innerHTML = "";
-  projectsData.forEach((proj, idx) => DOM.projectGrid.appendChild(createProjectTile(proj, idx)));
-  if (isDevelopment) {
-    DOM.projectGrid.appendChild(DOM.addNewBtn);
+  try {
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
+    
+    // Clear existing content
+    DOM.projectGrid.innerHTML = "";
+    
+    // Add project tiles
+    projectsData.forEach((proj, idx) => {
+      const tile = createProjectTile(proj, idx);
+      fragment.appendChild(tile);
+    });
+    
+    // Add "Add New" button for development
+    if (isDevelopment) {
+      fragment.appendChild(DOM.addNewBtn);
+    }
+    
+    // Single DOM update
+    DOM.projectGrid.appendChild(fragment);
+  } catch (error) {
+    performance.logError(error, 'renderProjects');
   }
 }
 
@@ -136,6 +200,11 @@ DOM.saveProjectBtn.addEventListener("click", async () => {
   await saveProjects(projectsData);
   DOM.modal.style.display = "none";
   await reloadProjects();
+  
+  // Force refresh to ensure tiles are visible
+  setTimeout(() => {
+    renderProjects();
+  }, 100);
 });
 
 DOM.cancelProjectBtn.addEventListener("click", () => (DOM.modal.style.display = "none"));
@@ -214,6 +283,13 @@ async function reloadSkills() {
 // PDF Merge functionality
 let selectedFiles = [];
 
+// PDF Scanner functionality
+let selectedImages = [];
+
+// Camera Scanner functionality
+let capturedPhotos = [];
+let cameraStream = null;
+
 function initPdfMerge() {
   DOM.pdfMergeLink.addEventListener('click', (e) => {
     e.preventDefault();
@@ -227,6 +303,415 @@ function initPdfMerge() {
   DOM.pdfFileInput.addEventListener('change', handleFileSelection);
   DOM.mergePdfBtn.addEventListener('click', mergePdfs);
 }
+
+function initPdfScanner() {
+  DOM.pdfScannerLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    DOM.pdfScannerModal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  });
+
+  DOM.closePdfScannerBtn.addEventListener('click', closePdfScanner);
+  DOM.backFromPdfScannerBtn.addEventListener('click', closePdfScanner);
+
+  DOM.scanFileInput.addEventListener('change', handleImageSelection);
+  DOM.scanToPdfBtn.addEventListener('click', createPdfFromImages);
+}
+
+function closePdfScanner() {
+  DOM.pdfScannerModal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function handleImageSelection(e) {
+  selectedImages = Array.from(e.target.files);
+  updateImagePreview();
+  DOM.scanToPdfBtn.disabled = selectedImages.length === 0;
+}
+
+function updateImagePreview() {
+  DOM.scanPreview.innerHTML = '';
+  selectedImages.forEach((file, index) => {
+    const previewItem = document.createElement('div');
+    previewItem.className = 'preview-item';
+    previewItem.draggable = true;
+    previewItem.dataset.index = index;
+    previewItem.style.cssText = 'display: flex; align-items: center; margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; cursor: grab; transition: all 0.3s ease; border: 2px solid transparent;';
+    
+    const dragHandle = document.createElement('span');
+    dragHandle.className = 'drag-handle';
+    dragHandle.textContent = '⋮⋮';
+    dragHandle.style.cssText = 'color: #3cc2ff; margin-right: 10px; cursor: grab;';
+    
+    const img = document.createElement('img');
+    img.style.cssText = 'width: 60px; height: 60px; object-fit: cover; border-radius: 5px; margin-right: 10px;';
+    img.src = URL.createObjectURL(file);
+    
+    const fileName = document.createElement('span');
+    fileName.textContent = file.name;
+    fileName.style.flex = '1';
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remove';
+    removeBtn.style.cssText = 'background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;';
+    removeBtn.addEventListener('click', () => removeImage(index));
+    
+    // Add drag event listeners
+    previewItem.addEventListener('dragstart', handleImageDragStart);
+    previewItem.addEventListener('dragover', handleImageDragOver);
+    previewItem.addEventListener('drop', handleImageDrop);
+    previewItem.addEventListener('dragend', handleImageDragEnd);
+    
+    previewItem.appendChild(dragHandle);
+    previewItem.appendChild(img);
+    previewItem.appendChild(fileName);
+    previewItem.appendChild(removeBtn);
+    DOM.scanPreview.appendChild(previewItem);
+  });
+}
+
+function removeImage(index) {
+  selectedImages.splice(index, 1);
+  updateImagePreview();
+  DOM.scanToPdfBtn.disabled = selectedImages.length === 0;
+}
+
+async function createPdfFromImages() {
+  if (selectedImages.length === 0) return;
+  
+  DOM.scanStatus.textContent = 'Creating PDF from images...';
+  DOM.scanToPdfBtn.disabled = true;
+  DOM.scanToPdfBtn.classList.add('loading');
+  
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    
+    for (let i = 0; i < selectedImages.length; i++) {
+      const file = selectedImages[i];
+      DOM.scanStatus.textContent = `Processing image ${i + 1} of ${selectedImages.length}...`;
+      
+      const arrayBuffer = await file.arrayBuffer();
+      let image;
+      
+      if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+        image = await pdfDoc.embedJpg(arrayBuffer);
+      } else if (file.type === 'image/png') {
+        image = await pdfDoc.embedPng(arrayBuffer);
+      } else {
+        continue;
+      }
+      
+      const page = pdfDoc.addPage([image.width, image.height]);
+      page.drawImage(image, {
+        x: 0,
+        y: 0,
+        width: image.width,
+        height: image.height,
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
+    DOM.scanStatus.textContent = 'Finalizing PDF...';
+    const pdfBytes = await pdfDoc.save();
+    
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `scanned-document-${new Date().toISOString().split('T')[0]}.pdf`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    
+    DOM.scanStatus.textContent = 'PDF created successfully! Download started.';
+  } catch (error) {
+    performance.logError(error, 'createPdfFromImages');
+    DOM.scanStatus.textContent = 'Error creating PDF. Please try again.';
+  } finally {
+    DOM.scanToPdfBtn.disabled = false;
+    DOM.scanToPdfBtn.classList.remove('loading');
+  }
+}
+
+let draggedImageIndex = null;
+
+function handleImageDragStart(e) {
+  draggedImageIndex = parseInt(e.target.dataset.index);
+  e.target.classList.add('dragging');
+  e.target.style.opacity = '0.5';
+}
+
+function handleImageDragOver(e) {
+  e.preventDefault();
+  e.target.classList.add('drag-over');
+  e.target.style.borderColor = '#3cc2ff';
+  e.target.style.background = 'rgba(60, 194, 255, 0.2)';
+}
+
+function handleImageDrop(e) {
+  e.preventDefault();
+  const dropIndex = parseInt(e.target.dataset.index);
+  
+  if (draggedImageIndex !== null && draggedImageIndex !== dropIndex) {
+    const draggedImage = selectedImages[draggedImageIndex];
+    selectedImages.splice(draggedImageIndex, 1);
+    selectedImages.splice(dropIndex, 0, draggedImage);
+    updateImagePreview();
+  }
+  
+  e.target.classList.remove('drag-over');
+  e.target.style.borderColor = 'transparent';
+  e.target.style.background = 'rgba(255,255,255,0.1)';
+}
+
+function handleImageDragEnd(e) {
+  e.target.classList.remove('dragging');
+  e.target.style.opacity = '1';
+  document.querySelectorAll('.preview-item').forEach(item => {
+    item.classList.remove('drag-over');
+    item.style.borderColor = 'transparent';
+    item.style.background = 'rgba(255,255,255,0.1)';
+  });
+  draggedImageIndex = null;
+}
+
+function initCameraScanner() {
+  DOM.cameraScannerLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    DOM.cameraScannerModal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  });
+
+  DOM.closeCameraScannerBtn.addEventListener('click', closeCameraScanner);
+  DOM.backFromCameraScannerBtn.addEventListener('click', closeCameraScanner);
+
+  DOM.startCameraBtn.addEventListener('click', startCamera);
+  DOM.captureBtn.addEventListener('click', capturePhoto);
+  DOM.stopCameraBtn.addEventListener('click', stopCamera);
+  DOM.createPdfFromCameraBtn.addEventListener('click', createPdfFromCamera);
+}
+
+function closeCameraScanner() {
+  stopCamera();
+  DOM.cameraScannerModal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+async function startCamera() {
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Camera not supported on this device');
+    }
+    
+    const constraints = {
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1920, min: 640 },
+        height: { ideal: 1080, min: 480 }
+      }
+    };
+    
+    cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+    DOM.cameraVideo.srcObject = cameraStream;
+    DOM.cameraVideo.style.display = 'block';
+    DOM.startCameraBtn.style.display = 'none';
+    DOM.captureBtn.style.display = 'inline-block';
+    DOM.captureBtn.disabled = false;
+    DOM.stopCameraBtn.style.display = 'inline-block';
+    DOM.stopCameraBtn.disabled = false;
+    DOM.cameraStatus.textContent = 'Camera ready! Position document and capture.';
+  } catch (error) {
+    let errorMessage = 'Camera access denied or not available.';
+    if (error.name === 'NotAllowedError') {
+      errorMessage = 'Camera permission denied. Please allow camera access.';
+    } else if (error.name === 'NotFoundError') {
+      errorMessage = 'No camera found on this device.';
+    }
+    DOM.cameraStatus.textContent = errorMessage;
+    performance.logError(error, 'startCamera');
+  }
+}
+
+function capturePhoto() {
+  const canvas = DOM.cameraCanvas;
+  const video = DOM.cameraVideo;
+  const context = canvas.getContext('2d');
+  
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0);
+  
+  canvas.toBlob((blob) => {
+    const file = new File([blob], `capture-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    capturedPhotos.push(file);
+    updateCapturedImages();
+    DOM.createPdfFromCameraBtn.disabled = false;
+    DOM.cameraStatus.textContent = `Captured ${capturedPhotos.length} photo(s). Continue capturing or create PDF.`;
+  }, 'image/jpeg', 0.9);
+}
+
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+  DOM.cameraVideo.style.display = 'none';
+  DOM.startCameraBtn.style.display = 'inline-block';
+  DOM.captureBtn.style.display = 'none';
+  DOM.stopCameraBtn.style.display = 'none';
+}
+
+function updateCapturedImages() {
+  DOM.capturedImages.innerHTML = '';
+  capturedPhotos.forEach((file, index) => {
+    const imageItem = document.createElement('div');
+    imageItem.className = 'captured-image';
+    imageItem.draggable = true;
+    imageItem.dataset.index = index;
+    imageItem.style.cssText = 'display: flex; align-items: center; margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; cursor: grab; transition: all 0.3s ease; border: 2px solid transparent;';
+    
+    const dragHandle = document.createElement('span');
+    dragHandle.className = 'drag-handle';
+    dragHandle.textContent = '⋮⋮';
+    dragHandle.style.cssText = 'color: #3cc2ff; margin-right: 10px; cursor: grab;';
+    
+    const img = document.createElement('img');
+    img.style.cssText = 'width: 60px; height: 60px; object-fit: cover; border-radius: 5px; margin-right: 10px;';
+    img.src = URL.createObjectURL(file);
+    
+    const fileName = document.createElement('span');
+    fileName.textContent = `Photo ${index + 1}`;
+    fileName.style.flex = '1';
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remove';
+    removeBtn.style.cssText = 'background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;';
+    removeBtn.addEventListener('click', () => removeCapturedPhoto(index));
+    
+    // Add drag event listeners
+    imageItem.addEventListener('dragstart', handleCameraDragStart);
+    imageItem.addEventListener('dragover', handleCameraDragOver);
+    imageItem.addEventListener('drop', handleCameraDrop);
+    imageItem.addEventListener('dragend', handleCameraDragEnd);
+    
+    imageItem.appendChild(dragHandle);
+    imageItem.appendChild(img);
+    imageItem.appendChild(fileName);
+    imageItem.appendChild(removeBtn);
+    DOM.capturedImages.appendChild(imageItem);
+  });
+}
+
+function removeCapturedPhoto(index) {
+  capturedPhotos.splice(index, 1);
+  updateCapturedImages();
+  DOM.createPdfFromCameraBtn.disabled = capturedPhotos.length === 0;
+}
+
+let draggedCameraIndex = null;
+
+function handleCameraDragStart(e) {
+  draggedCameraIndex = parseInt(e.target.dataset.index);
+  e.target.classList.add('dragging');
+  e.target.style.opacity = '0.5';
+}
+
+function handleCameraDragOver(e) {
+  e.preventDefault();
+  e.target.classList.add('drag-over');
+  e.target.style.borderColor = '#3cc2ff';
+  e.target.style.background = 'rgba(60, 194, 255, 0.2)';
+}
+
+function handleCameraDrop(e) {
+  e.preventDefault();
+  const dropIndex = parseInt(e.target.dataset.index);
+  
+  if (draggedCameraIndex !== null && draggedCameraIndex !== dropIndex) {
+    const draggedPhoto = capturedPhotos[draggedCameraIndex];
+    capturedPhotos.splice(draggedCameraIndex, 1);
+    capturedPhotos.splice(dropIndex, 0, draggedPhoto);
+    updateCapturedImages();
+  }
+  
+  e.target.classList.remove('drag-over');
+  e.target.style.borderColor = 'transparent';
+  e.target.style.background = 'rgba(255,255,255,0.1)';
+}
+
+function handleCameraDragEnd(e) {
+  e.target.classList.remove('dragging');
+  e.target.style.opacity = '1';
+  document.querySelectorAll('.captured-image').forEach(item => {
+    item.classList.remove('drag-over');
+    item.style.borderColor = 'transparent';
+    item.style.background = 'rgba(255,255,255,0.1)';
+  });
+  draggedCameraIndex = null;
+}
+
+async function createPdfFromCamera() {
+  if (capturedPhotos.length === 0) return;
+  
+  DOM.cameraStatus.textContent = 'Creating PDF from captured photos...';
+  DOM.createPdfFromCameraBtn.disabled = true;
+  DOM.createPdfFromCameraBtn.classList.add('loading');
+  
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    
+    for (let i = 0; i < capturedPhotos.length; i++) {
+      const file = capturedPhotos[i];
+      DOM.cameraStatus.textContent = `Processing photo ${i + 1} of ${capturedPhotos.length}...`;
+      
+      const arrayBuffer = await file.arrayBuffer();
+      const image = await pdfDoc.embedJpg(arrayBuffer);
+      
+      const page = pdfDoc.addPage([image.width, image.height]);
+      page.drawImage(image, {
+        x: 0,
+        y: 0,
+        width: image.width,
+        height: image.height,
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
+    DOM.cameraStatus.textContent = 'Finalizing PDF...';
+    const pdfBytes = await pdfDoc.save();
+    
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `camera-scan-${new Date().toISOString().split('T')[0]}.pdf`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    
+    DOM.cameraStatus.textContent = 'PDF created successfully! Download started.';
+  } catch (error) {
+    performance.logError(error, 'createPdfFromCamera');
+    DOM.cameraStatus.textContent = 'Error creating PDF. Please try again.';
+  } finally {
+    DOM.createPdfFromCameraBtn.disabled = false;
+    DOM.createPdfFromCameraBtn.classList.remove('loading');
+  }
+}
+
+// Make functions globally accessible
+window.removeCapturedPhoto = removeCapturedPhoto;
+
+// Make removeImage globally accessible
+window.removeImage = removeImage;
 
 function closePdfMerge() {
   DOM.pdfMergeModal.style.display = 'none';
@@ -246,13 +731,27 @@ function updateFileList() {
     fileItem.className = 'file-item';
     fileItem.draggable = true;
     fileItem.dataset.index = index;
-    fileItem.innerHTML = `
-      <div style="display: flex; align-items: center;">
-        <span class="drag-handle">⋮⋮</span>
-        <span>${file.name}</span>
-      </div>
-      <button onclick="removeFile(${index})" style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Remove</button>
-    `;
+    
+    const fileInfo = document.createElement('div');
+    fileInfo.style.display = 'flex';
+    fileInfo.style.alignItems = 'center';
+    
+    const dragHandle = document.createElement('span');
+    dragHandle.className = 'drag-handle';
+    dragHandle.textContent = '⋮⋮';
+    
+    const fileName = document.createElement('span');
+    fileName.textContent = file.name;
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remove';
+    removeBtn.style.cssText = 'background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;';
+    removeBtn.addEventListener('click', () => removeFile(index));
+    
+    fileInfo.appendChild(dragHandle);
+    fileInfo.appendChild(fileName);
+    fileItem.appendChild(fileInfo);
+    fileItem.appendChild(removeBtn);
     
     // Add drag event listeners
     fileItem.addEventListener('dragstart', handleDragStart);
@@ -304,6 +803,9 @@ function removeFile(index) {
   updateFileList();
   DOM.mergePdfBtn.disabled = selectedFiles.length < 2;
 }
+
+// Make removeFile globally accessible
+window.removeFile = removeFile;
 
 async function mergePdfs() {
   if (selectedFiles.length < 2) return;
@@ -398,6 +900,12 @@ async function init() {
   // Initialize PDF merge
   initPdfMerge();
   
+  // Initialize PDF scanner
+  initPdfScanner();
+  
+  // Initialize camera scanner
+  initCameraScanner();
+  
   // Initialize smooth header
   initScrollHeader();
   
@@ -418,6 +926,43 @@ async function init() {
       }
     });
   });
+  
+
 }
 
-init();
+// Global error handler
+window.addEventListener('error', (e) => {
+  console.error('Global error:', e.error);
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('Unhandled promise rejection:', e.reason);
+});
+
+// Viewport height fix for mobile
+function setViewportHeight() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+setViewportHeight();
+window.addEventListener('resize', debounce(setViewportHeight, 100));
+window.addEventListener('orientationchange', () => {
+  setTimeout(setViewportHeight, 100);
+});
+
+// Service Worker registration
+if ('serviceWorker' in navigator && !isDevelopment) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(registration => console.log('SW registered:', registration))
+      .catch(error => console.log('SW registration failed:', error));
+  });
+}
+
+// Initialize app when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
