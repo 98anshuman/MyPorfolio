@@ -518,6 +518,12 @@ footer {
   font-size: 1.10rem;
 }
 
+/* Hide edit elements in production */
+.production-mode .edit-btn,
+.production-mode .add-new {
+  display: none !important;
+}
+
 /* Responsive tweaks */
 @media (max-width: 480px) {
   section {

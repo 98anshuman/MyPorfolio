@@ -1,7 +1,4 @@
-import { ref, get, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-import { db } from "./firebase-init.js";
-
-const isGitHubPages = window.location.hostname.includes("github.io");
+import { DataManager } from "./data-manager.js";
 
 const DOM = {
   projectGrid: document.getElementById("projectGrid"),
@@ -18,7 +15,6 @@ const DOM = {
   skillsInput: document.getElementById("skillsInput"),
   saveSkillsBtn: document.getElementById("saveSkillsBtn"),
   cancelSkillsBtn: document.getElementById("cancelSkillsBtn"),
-  writeWithMeEl: document.getElementById("writeWithMe"),
   projectDetailModal: document.getElementById("projectDetailModal"),
   detailProjectTitle: document.getElementById("detailProjectTitle"),
   detailProjectDescription: document.getElementById("detailProjectDescription"),
@@ -29,68 +25,34 @@ let editingProjectIndex = null;
 let projectsData = [];
 let skillsData = [];
 
-function toggleEditUI() {
-  const showEdit = !isGitHubPages;
-  if (DOM.addNewBtn) DOM.addNewBtn.style.display = showEdit ? "" : "none";
-  if (DOM.editSkillsBtn) DOM.editSkillsBtn.style.display = showEdit ? "" : "none";
-  DOM.writeWithMeEl.style.display = showEdit ? "none" : "block";
-}
-
-async function loadData(path, defaultData) {
-  try {
-    const snapshot = await get(ref(db, path));
-    return snapshot.exists() ? snapshot.val() : defaultData;
-  } catch (err) {
-    console.error(`Error loading ${path}:`, err);
-    return defaultData;
-  }
-}
-
-async function saveData(path, data) {
-  try {
-    await set(ref(db, path), data);
-  } catch (err) {
-    console.error(`Error saving ${path}:`, err);
-  }
-}
+// Check if running in development mode
+const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 async function loadProjects() {
-  return loadData("projects", [
-    {
-      title: "Network Vulnerability Scanner",
-      description: "Built an automated scanner for open ports, outdated protocols, and known vulnerabilities across enterprise infrastructure."
-    },
-    {
-      title: "Web Application Security Testing",
-      description: "Found and reported CVSS-9+ vulnerabilities in client web apps; automated scripting for SQLi, XSS, CSRF and business logic flaws."
-    }
-  ]);
+  return await DataManager.loadProjects();
 }
 
 async function saveProjects(projects) {
-  return saveData("projects", projects);
+  await DataManager.saveProjects(projects);
 }
 
 async function loadSkills() {
-  return loadData("skills", [
-    "Penetration Testing", "Network Security", "SIEM Operations", "Incident Response",
-    "Python & Bash Scripting", "Cryptography", "Cloud Security (AWS/Azure)",
-    "Threat Intelligence", "Malware Analysis"
-  ]);
+  return await DataManager.loadSkills();
 }
 
 async function saveSkills(skills) {
-  return saveData("skills", skills);
+  await DataManager.saveSkills(skills);
 }
 
 function createProjectTile(proj, index) {
   const tile = document.createElement("div");
   tile.className = "project-tile";
 
+  const editButton = isDevelopment ? '<button class="edit-btn">Edit</button>' : '';
   tile.innerHTML = `
     <h3>${proj.title}</h3>
     <div class="desc">${proj.description}</div>
-    ${!isGitHubPages ? '<button class="edit-btn">Edit</button>' : ''}
+    ${editButton}
   `;
 
   tile.addEventListener("click", (e) => {
@@ -101,7 +63,7 @@ function createProjectTile(proj, index) {
     document.body.style.overflow = "hidden";
   });
 
-  if (!isGitHubPages && tile.querySelector(".edit-btn")) {
+  if (isDevelopment) {
     tile.querySelector(".edit-btn").addEventListener("click", evt => {
       evt.stopPropagation();
       openProjectModal(index);
@@ -111,33 +73,24 @@ function createProjectTile(proj, index) {
   return tile;
 }
 
+function renderSkills() {
+  DOM.skillsList.innerHTML = "";
+  skillsData.forEach(skill => {
+    const li = document.createElement("li");
+    li.textContent = skill;
+    DOM.skillsList.appendChild(li);
+  });
+}
+
 function renderProjects() {
   DOM.projectGrid.innerHTML = "";
   projectsData.forEach((proj, idx) => DOM.projectGrid.appendChild(createProjectTile(proj, idx)));
-  if (!isGitHubPages && DOM.addNewBtn) DOM.projectGrid.appendChild(DOM.addNewBtn);
-  toggleEditUI();
-}
-
-function renderSkills(expanded = false) {
-  DOM.skillsList.innerHTML = "";
-  if (expanded) {
-    DOM.skillsList.classList.remove("compact");
-    DOM.skillsList.classList.add("expanded");
-    skillsData.forEach(skill => {
-      const li = document.createElement("li");
-      li.textContent = skill;
-      DOM.skillsList.appendChild(li);
-    });
-  } else {
-    DOM.skillsList.classList.add("compact");
-    DOM.skillsList.classList.remove("expanded");
-    DOM.skillsList.setAttribute("data-summary", `${skillsData.length} skills (click to expand)`);
+  if (isDevelopment) {
+    DOM.projectGrid.appendChild(DOM.addNewBtn);
   }
 }
 
-DOM.skillsList.addEventListener("click", () => {
-  renderSkills(DOM.skillsList.classList.contains("compact"));
-});
+
 
 function openProjectModal(index = null) {
   editingProjectIndex = index;
@@ -184,7 +137,7 @@ function openSkillsModal() {
   DOM.skillsModal.style.display = "flex";
 }
 
-DOM.editSkillsBtn?.addEventListener("click", openSkillsModal);
+DOM.editSkillsBtn.addEventListener("click", openSkillsModal);
 
 DOM.saveSkillsBtn.addEventListener("click", async () => {
   const skillsText = DOM.skillsInput.value.trim();
@@ -195,13 +148,15 @@ DOM.saveSkillsBtn.addEventListener("click", async () => {
   skillsData = skillsText.split(",").map(s => s.trim()).filter(Boolean);
   await saveSkills(skillsData);
   DOM.skillsModal.style.display = "none";
-  renderSkills(false);
+  renderSkills();
 });
 
 DOM.cancelSkillsBtn.addEventListener("click", () => (DOM.skillsModal.style.display = "none"));
 DOM.skillsModal.addEventListener("click", e => {
   if (e.target === DOM.skillsModal) DOM.skillsModal.style.display = "none";
 });
+
+
 
 DOM.closeProjectDetailBtn.addEventListener("click", () => {
   DOM.projectDetailModal.style.display = "none";
@@ -221,12 +176,19 @@ async function reloadProjects() {
 
 async function reloadSkills() {
   skillsData = await loadSkills();
-  renderSkills(false);
+  renderSkills();
 }
 
 async function init() {
-  toggleEditUI();
-  await Promise.all([reloadProjects(), reloadSkills()]);
+  await reloadProjects();
+  await reloadSkills();
+  
+  // Hide edit elements in production
+  if (!isDevelopment) {
+    document.body.classList.add('production-mode');
+    DOM.editSkillsBtn.style.display = 'none';
+    DOM.addNewBtn.style.display = 'none';
+  }
 }
 
 init();
