@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recover Portfolio Data</title>
+</head>
+<body>
+    <h2>Recover Your Saved Portfolio Data</h2>
+    <button onclick="recoverData()">Check & Recover Data</button>
+    <div id="output"></div>
+
+    <script>
+        function recoverData() {
+            const projects = localStorage.getItem('portfolio_projects');
+            const skills = localStorage.getItem('portfolio_skills');
+            
+            const output = document.getElementById('output');
+            
+            if (projects || skills) {
+                output.innerHTML = '<h3>Found saved data:</h3>';
+                
+                if (projects) {
+                    output.innerHTML += '<h4>Projects:</h4><pre>' + projects + '</pre>';
+                }
+                
+                if (skills) {
+                    output.innerHTML += '<h4>Skills:</h4><pre>' + skills + '</pre>';
+                }
+                
+                // Create downloadable JSON
+                const data = {
+                    projects: projects ? JSON.parse(projects) : [],
+                    skills: skills ? JSON.parse(skills) : []
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'recovered-portfolio-data.json';
+                a.textContent = 'Download Recovered Data';
+                output.appendChild(document.createElement('br'));
+                output.appendChild(a);
+            } else {
+                output.innerHTML = '<p>No saved data found in localStorage</p>';
+            }
+        }
+    </script>
+</body>
+</html>

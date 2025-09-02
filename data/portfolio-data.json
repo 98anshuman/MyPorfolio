@@ -1,4 +1,42 @@
 {
-  "projects": [],
-  "skills": []
+  "projects": [
+    {
+      "title": "Microsoft Defender for Endpoint (MDE) to Azure Data Explorer (ADX) Integration",
+      "description": "Objective:\nEnable centralized security telemetry ingestion from Microsoft Defender for Endpoint into Azure Data Explorer to improve threat hunting, analytics, and cost optimization.\n\nKey Contributions:\n\nDesigned and implemented a scalable pipeline to export MDE telemetry to Azure Storage + Azure Data Factory (ADF) for ingestion into Azure Data Explorer.\n\nReplaced Event Hub–based ingestion (~€1750–1850/month) with Storage + ADF, reducing costs significantly while maintaining data freshness and query performance.\n\nDeveloped ADF pipelines to handle data parsing, transformation, and ingestion into ADX with retry logic and error handling for reliability.\n\nBenchmarked ingestion performance vs EventHub (latency, throughput, and cost), validating business case for migration.\n\nCreated Kusto Query Language (KQL) dashboards in ADX to support proactive threat hunting and incident investigations.\n\nDefined governance & retention strategy in ADX (table partitioning, data lifecycle policies) for optimal storage and query performance.\n\nCollaborated with SOC teams to build advanced detection use cases leveraging MITRE ATT&CK mapping in ADX queries.\n\nPrepared Architecture Decision Record (ADR) documenting cost-benefit analysis, implementation steps, and migration roadmap.\n\nNext Steps: Deprecating EventHub ingestion after stability validation of Storage+ADF pipeline.\n\nOutcome:\n✔ Reduced ingestion cost by >50%\n✔ Improved SOC team's hunting efficiency with richer and faster ADX queries\n✔ Eliminated dependency on high-cost EventHub premium setup"
+    },
+    {
+      "title": "Deploying MDE Deception capability",
+      "description": "work in progress..."
+    },
+    {
+      "title": "Onboarding Client, Server, Linux & Mac devices",
+      "description": "work in progress..."
+    },
+    {
+      "title": "MDE ASR implementation on Infra",
+      "description": "work in progress..."
+    },
+    {
+      "title": "Security Baseline Policies",
+      "description": "work in progress..."
+    },
+    {
+      "title": "Deploying MDE Device Discovery feature",
+      "description": "work in progress..."
+    }
+  ],
+  "skills": [
+    "Microsoft Defender 365",
+    "Microsoft Sentinel",
+    "Microsoft Intune",
+    "Azure Active Directory (AAD)",
+    "Microsoft Defender for Cloud",
+    "Microsoft Purview (DLP)",
+    "Threat Detection & Incident Response",
+    "Cloud Security",
+    "Automation & Scripting",
+    "Security Compliance & Governance",
+    "Networking & Firewalls",
+    "MITRE ATTACK"
+  ]
 }

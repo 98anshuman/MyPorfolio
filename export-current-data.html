@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Export Current Portfolio Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow: auto; }
+        .section { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h2>Export Your Current Portfolio Data</h2>
+    <button onclick="exportData()">Get Current Data</button>
+    <button onclick="copyToClipboard()">Copy JSON to Clipboard</button>
+    
+    <div id="output"></div>
+    <div id="jsonOutput" style="display:none;"></div>
+
+    <script type="module">
+        import { DataManager } from './data-manager.js';
+        
+        window.exportData = async function() {
+            try {
+                const projects = await DataManager.loadProjects();
+                const skills = await DataManager.loadSkills();
+                
+                const data = {
+                    projects: projects,
+                    skills: skills
+                };
+                
+                const output = document.getElementById('output');
+                const jsonOutput = document.getElementById('jsonOutput');
+                
+                output.innerHTML = `
+                    <div class="section">
+                        <h3>Current Projects (${projects.length}):</h3>
+                        ${projects.map((p, i) => `
+                            <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                <strong>${i + 1}. ${p.title}</strong><br>
+                                <small>${p.description}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Current Skills (${skills.length}):</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                            ${skills.map(skill => `<span style="background: #e3f2fd; padding: 5px 10px; border-radius: 15px; font-size: 0.9rem;">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>JSON for portfolio-data.json:</h3>
+                        <pre id="jsonData">${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+                
+                jsonOutput.textContent = JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                document.getElementById('output').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        };
+        
+        window.copyToClipboard = function() {
+            const jsonData = document.getElementById('jsonData');
+            if (jsonData) {
+                navigator.clipboard.writeText(jsonData.textContent).then(() => {
+                    alert('JSON copied to clipboard! You can now paste it into portfolio-data.json');
+                });
+            }
+        };
+    </script>
+</body>
+</html>

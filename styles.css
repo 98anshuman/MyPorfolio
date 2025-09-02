@@ -359,24 +359,45 @@ section h2 {
   font-style: italic;
 }
 
-.project-tile .edit-btn {
+.tile-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.project-tile .edit-btn,
+.project-tile .delete-btn {
   pointer-events: auto;
   cursor: pointer;
-  margin-top: 7px;
-  padding: 7px 14px;
-  align-self: flex-start;
-  background: #1976d2;
-  color: #fff;
+  padding: 6px 12px;
   border: none;
   border-radius: 5px;
   font-weight: bold;
-  font-size: 0.99em;
-  transition: background 0.13s;
+  font-size: 0.85em;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.project-tile .edit-btn {
+  background: #1976d2;
+  color: #fff;
 }
 
 .project-tile .edit-btn:hover {
   background: #0efb94;
   color: #222;
+  transform: translateY(-1px);
+}
+
+.project-tile .delete-btn {
+  background: #ff4444;
+  color: #fff;
+}
+
+.project-tile .delete-btn:hover {
+  background: #ff6666;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
 }
 
 .project-tile.add-new {
@@ -559,15 +580,60 @@ section h2 {
   font-size: 1.08rem;
   font-family: 'Roboto Mono', monospace;
   font-weight: 600;
-  transition: background 0.17s, color 0.14s;
+  transition: all 0.2s ease;
   margin-bottom: 4px;
   box-shadow: 0 2px 8px #0efb9440;
   cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .skills-list li:hover {
   background: #0efb94;
   color: #222;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.skill-text {
+  flex: 1;
+}
+
+.skill-delete-btn {
+  background: rgba(255, 68, 68, 0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: scale(0.8);
+  margin-left: 8px;
+}
+
+.skill-item:hover .skill-delete-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.skill-delete-btn:hover {
+  background: #ff4444;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(255, 68, 68, 0.4);
 }
 
 #skillsList.compact li {
@@ -718,346 +784,239 @@ a:focus {
   border: 0;
 }
 
-/* Floating PDF Merge Button */
-.pdf-merge-fab {
+/* Modern PDF Tools Container */
+.pdf-tools-container {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffcc02 100%);
-  border-radius: 50%;
+  bottom: 20px;
+  right: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6), 0 0 20px rgba(255, 204, 2, 0.3);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  gap: 12px;
   z-index: 1000;
-  overflow: hidden;
-  border: 2px solid rgba(255, 204, 2, 0.8);
 }
 
-.pdf-merge-fab:hover {
-  transform: scale(1.1) translateY(-2px);
-  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.8), 0 0 30px rgba(255, 204, 2, 0.6);
-  width: 140px;
-  border-radius: 30px;
-}
-
-.fab-icon {
-  font-size: 1.5rem;
-  color: #fff;
-  transition: all 0.3s ease;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-}
-
-.fab-text {
-  font-size: 0.8rem;
-  color: #fff;
-  font-family: 'Roboto Mono', monospace;
-  font-weight: 700;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  margin-top: 2px;
-  text-shadow: 0 0 15px #ffcc02, 0 0 25px #f7931e, 0 0 35px #ff6b35;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.pdf-merge-fab:hover .fab-text {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.pdf-merge-fab:hover .fab-icon {
-  transform: translateY(-2px);
-}
-
-.pdf-merge-fab:active {
-  transform: scale(0.95);
-}
-
-.fab-overlay-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.8rem;
-  font-family: 'Roboto Mono', monospace;
-  font-weight: 900;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 
-    0 0 15px rgba(255, 204, 2, 1),
-    0 0 25px rgba(247, 147, 30, 0.9),
-    0 0 35px rgba(255, 107, 53, 0.7),
-    0 0 45px rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 1;
-  animation: pulseGlow 1.5s ease-in-out infinite alternate;
-  transition: all 0.3s ease;
-}
-
-@keyframes pulseGlow {
-  0% {
-    text-shadow: 
-      0 0 15px rgba(255, 204, 2, 1),
-      0 0 25px rgba(247, 147, 30, 0.9),
-      0 0 35px rgba(255, 107, 53, 0.7),
-      0 0 45px rgba(255, 255, 255, 0.5);
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    text-shadow: 
-      0 0 20px rgba(255, 204, 2, 1),
-      0 0 30px rgba(247, 147, 30, 1),
-      0 0 40px rgba(255, 107, 53, 0.9),
-      0 0 50px rgba(255, 255, 255, 0.7);
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.05);
-  }
-}
-
-.pdf-merge-fab:hover .fab-overlay-text {
-  opacity: 0 !important;
-  transform: translate(-50%, -50%) scale(0.8) !important;
-  text-shadow: none !important;
-  animation-play-state: paused !important;
-}
-
-/* PDF Scanner Button */
-.pdf-scanner-fab {
-  position: fixed;
-  bottom: 100px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #00c851 0%, #00ff41 50%, #69f0ae 100%);
-  border-radius: 50%;
+/* Base PDF Tool Card */
+.pdf-tool-card {
+  background: rgba(21, 25, 46, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 16px 20px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
   cursor: pointer;
-  box-shadow: 0 8px 25px rgba(0, 200, 81, 0.6), 0 0 20px rgba(0, 255, 65, 0.3);
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  z-index: 1000;
+  border: 2px solid transparent;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 180px;
+  position: relative;
   overflow: hidden;
-  border: 2px solid rgba(0, 255, 65, 0.8);
 }
 
-.pdf-scanner-fab:hover {
-  transform: scale(1.1) translateY(-2px);
-  box-shadow: 0 12px 35px rgba(0, 200, 81, 0.8), 0 0 30px rgba(0, 255, 65, 0.6);
-  width: 140px;
-  border-radius: 30px;
-}
-
-.pdf-scanner-fab .fab-icon {
-  font-size: 1.5rem;
-  color: #fff;
-  transition: all 0.3s ease;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-}
-
-.pdf-scanner-fab .fab-text {
-  font-size: 0.8rem;
-  color: #fff;
-  font-family: 'Roboto Mono', monospace;
-  font-weight: 700;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  margin-top: 2px;
-  text-shadow: 0 0 15px #00ff41, 0 0 25px #00c851, 0 0 35px #69f0ae;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.pdf-scanner-fab:hover .fab-text {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.pdf-scanner-fab:hover .fab-icon {
-  transform: translateY(-2px);
-}
-
-.pdf-scanner-fab:active {
-  transform: scale(0.95);
-}
-
-.pdf-scanner-fab .fab-overlay-text {
+.pdf-tool-card::before {
+  content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.8rem;
-  font-family: 'Roboto Mono', monospace;
-  font-weight: 900;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 
-    0 0 15px rgba(0, 255, 65, 1),
-    0 0 25px rgba(0, 200, 81, 0.9),
-    0 0 35px rgba(105, 240, 174, 0.7),
-    0 0 45px rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  pointer-events: none;
-  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pdf-tool-card:hover::before {
   opacity: 1;
-  animation: pulseScanGlow 1.5s ease-in-out infinite alternate;
-  transition: all 0.3s ease;
 }
 
-@keyframes pulseScanGlow {
-  0% {
-    text-shadow: 
-      0 0 15px rgba(0, 255, 65, 1),
-      0 0 25px rgba(0, 200, 81, 0.9),
-      0 0 35px rgba(105, 240, 174, 0.7),
-      0 0 45px rgba(255, 255, 255, 0.5);
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    text-shadow: 
-      0 0 20px rgba(0, 255, 65, 1),
-      0 0 30px rgba(0, 200, 81, 1),
-      0 0 40px rgba(105, 240, 174, 0.9),
-      0 0 50px rgba(255, 255, 255, 0.7);
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.05);
-  }
+.pdf-tool-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
 }
 
-.pdf-scanner-fab:hover .fab-overlay-text {
-  opacity: 0 !important;
-  transform: translate(-50%, -50%) scale(0.8) !important;
-  text-shadow: none !important;
-  animation-play-state: paused !important;
+.pdf-tool-card:active {
+  transform: translateY(-2px) scale(0.98);
 }
 
-/* Camera Scanner Button */
-.camera-scanner-fab {
-  position: fixed;
-  bottom: 170px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #9c27b0 0%, #e91e63 50%, #ff5722 100%);
-  border-radius: 50%;
+/* PDF Merge Card */
+.pdf-merge-card {
+  border-color: rgba(255, 152, 0, 0.6);
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.15) 0%, rgba(255, 193, 7, 0.1) 100%);
+}
+
+.pdf-merge-card:hover {
+  border-color: rgba(255, 152, 0, 1);
+  box-shadow: 0 16px 48px rgba(255, 152, 0, 0.3);
+}
+
+/* Image to PDF Card */
+.image-pdf-card {
+  border-color: rgba(76, 175, 80, 0.6);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(139, 195, 74, 0.1) 100%);
+}
+
+.image-pdf-card:hover {
+  border-color: rgba(76, 175, 80, 1);
+  box-shadow: 0 16px 48px rgba(76, 175, 80, 0.3);
+}
+
+/* Camera Scanner Card */
+.camera-scanner-card {
+  border-color: rgba(156, 39, 176, 0.6);
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.15) 0%, rgba(233, 30, 99, 0.1) 100%);
+}
+
+.camera-scanner-card:hover {
+  border-color: rgba(156, 39, 176, 1);
+  box-shadow: 0 16px 48px rgba(156, 39, 176, 0.3);
+}
+
+/* Tool Icon */
+.tool-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 8px 25px rgba(156, 39, 176, 0.6), 0 0 20px rgba(233, 30, 99, 0.3);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  z-index: 1000;
-  overflow: hidden;
-  border: 2px solid rgba(233, 30, 99, 0.8);
-}
-
-.camera-scanner-fab:hover {
-  transform: scale(1.1) translateY(-2px);
-  box-shadow: 0 12px 35px rgba(156, 39, 176, 0.8), 0 0 30px rgba(233, 30, 99, 0.6);
-  width: 140px;
-  border-radius: 30px;
-}
-
-.camera-scanner-fab .fab-icon {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: #fff;
+  flex-shrink: 0;
   transition: all 0.3s ease;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
-.camera-scanner-fab .fab-text {
-  font-size: 0.8rem;
-  color: #fff;
+.pdf-merge-card .tool-icon {
+  background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+}
+
+.image-pdf-card .tool-icon {
+  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+}
+
+.camera-scanner-card .tool-icon {
+  background: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%);
+}
+
+.pdf-tool-card:hover .tool-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Tool Content */
+.tool-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.tool-title {
   font-family: 'Roboto Mono', monospace;
   font-weight: 700;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  margin-top: 2px;
-  text-shadow: 0 0 15px #e91e63, 0 0 25px #9c27b0, 0 0 35px #ff5722;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 0.9rem;
+  color: #fff;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
 }
 
-.camera-scanner-fab:hover .fab-text {
-  opacity: 1;
-  transform: translateY(0);
+.tool-description {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.3;
 }
 
-.camera-scanner-fab:hover .fab-icon {
-  transform: translateY(-2px);
-}
-
-.camera-scanner-fab:active {
-  transform: scale(0.95);
-}
-
-.camera-scanner-fab .fab-overlay-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.8rem;
-  font-family: 'Roboto Mono', monospace;
-  font-weight: 900;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 
-    0 0 15px rgba(233, 30, 99, 1),
-    0 0 25px rgba(156, 39, 176, 0.9),
-    0 0 35px rgba(255, 87, 34, 0.7),
-    0 0 45px rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 1;
-  animation: pulseCamGlow 1.5s ease-in-out infinite alternate;
-  transition: all 0.3s ease;
-}
-
-@keyframes pulseCamGlow {
-  0% {
-    text-shadow: 
-      0 0 15px rgba(233, 30, 99, 1),
-      0 0 25px rgba(156, 39, 176, 0.9),
-      0 0 35px rgba(255, 87, 34, 0.7),
-      0 0 45px rgba(255, 255, 255, 0.5);
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .pdf-tools-container {
+    bottom: 15px;
+    right: 15px;
+    left: auto;
+    flex-direction: column;
+    align-items: flex-end;
+    width: auto;
+    max-width: 200px;
   }
-  100% {
-    text-shadow: 
-      0 0 20px rgba(233, 30, 99, 1),
-      0 0 30px rgba(156, 39, 176, 1),
-      0 0 40px rgba(255, 87, 34, 0.9),
-      0 0 50px rgba(255, 255, 255, 0.7);
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.05);
+  
+  .pdf-tool-card {
+    min-width: 160px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  
+  .tool-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+  
+  .tool-title {
+    font-size: 0.8rem;
+  }
+  
+  .tool-description {
+    font-size: 0.65rem;
   }
 }
 
-.camera-scanner-fab:hover .fab-overlay-text {
-  opacity: 0 !important;
-  transform: translate(-50%, -50%) scale(0.8) !important;
-  text-shadow: none !important;
-  animation-play-state: paused !important;
+/* Extra Small Mobile */
+@media (max-width: 480px) {
+  .pdf-tools-container {
+    bottom: 10px;
+    right: 10px;
+    left: auto;
+    max-width: 150px;
+  }
+  
+  .pdf-tool-card {
+    min-width: 140px;
+    padding: 8px 10px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+  
+  .tool-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+    border-radius: 6px;
+  }
+  
+  .tool-title {
+    font-size: 0.75rem;
+  }
+  
+  .tool-description {
+    font-size: 0.6rem;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .pdf-tools-container {
+    flex-direction: row;
+    bottom: 8px;
+    right: 8px;
+    left: auto;
+    gap: 6px;
+    max-width: none;
+  }
+  
+  .pdf-tool-card {
+    min-width: 100px;
+    padding: 6px 8px;
+  }
+  
+  .tool-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 0.9rem;
+  }
+  
+  .tool-title {
+    font-size: 0.7rem;
+  }
+  
+  .tool-description {
+    display: none;
+  }
 }
 
 /* Camera Interface Styles */
@@ -1149,54 +1108,8 @@ a:focus {
   outline-offset: 2px;
 }
 
-/* Mobile adjustments for FAB */
+/* Camera Controls Mobile Optimization */
 @media (max-width: 768px) {
-  .pdf-merge-fab {
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-  }
-  
-  .pdf-merge-fab:hover {
-    width: 120px;
-  }
-  
-  .pdf-scanner-fab {
-    bottom: 80px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-  }
-  
-  .pdf-scanner-fab:hover {
-    width: 120px;
-  }
-  
-  .camera-scanner-fab {
-    bottom: 140px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-  }
-  
-  .camera-scanner-fab:hover {
-    width: 120px;
-  }
-  
-  .fab-icon {
-    font-size: 1.2rem;
-  }
-  
-  .fab-text {
-    font-size: 0.7rem;
-  }
-  
-  .fab-overlay-text {
-    font-size: 0.65rem;
-    letter-spacing: 1.5px;
-  }
-  
   .camera-controls {
     flex-direction: column;
     align-items: center;
@@ -1235,6 +1148,28 @@ a:focus {
   .pdf-merge-fab {
     border: 2px solid #ffffff;
   }
+}
+
+/* Production Performance Optimizations */
+.project-tile,
+.skills-list li,
+button,
+.pdf-tool-card {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Intersection Observer for lazy loading */
+.lazy-load {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.lazy-load.loaded {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Comprehensive Responsive Design */
@@ -1478,7 +1413,8 @@ a:focus {
   .edit-btn,
   .add-new,
   nav,
-  footer {
+  footer,
+  .pdf-tools-container {
     display: none !important;
   }
   
@@ -1491,6 +1427,11 @@ a:focus {
   
   .project-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .project-tile {
+    border: 1px solid #333;
+    margin-bottom: 1rem;
   }
 }
 
@@ -1596,11 +1537,23 @@ a:focus {
   color: #43c3ff;
 }
 
-/* Performance Optimizations */
-.project-tile,
-.skills-list li,
-button {
-  will-change: transform;
+/* Critical CSS Loading */
+@media (max-width: 768px) {
+  .pdf-tools-container {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}
+
+/* Prefers reduced data */
+@media (prefers-reduced-data: reduce) {
+  .avatar {
+    background: #3cc2ff;
+  }
+  
+  .project-tile {
+    background: #182145;
+  }
 }
 
 /* Reduced Motion Support */

@@ -60,7 +60,9 @@ let skillsData = [];
 const isDevelopment = window.location.hostname === 'localhost' || 
                      window.location.hostname === '127.0.0.1' || 
                      window.location.hostname === '' ||
-                     window.location.protocol === 'file:';
+                     window.location.protocol === 'file:' ||
+                     window.location.port === '5500' ||
+                     window.location.port === '3000';
 
 // Performance and error tracking
 const performance = {
@@ -91,6 +93,10 @@ async function loadProjects() {
 
 async function saveProjects(projects) {
   await DataManager.saveProjects(projects);
+  // Auto-export updated data for easy GitHub sync
+  if (isDevelopment) {
+    autoExportData();
+  }
 }
 
 async function loadSkills() {
@@ -99,6 +105,10 @@ async function loadSkills() {
 
 async function saveSkills(skills) {
   await DataManager.saveSkills(skills);
+  // Auto-export updated data for easy GitHub sync
+  if (isDevelopment) {
+    autoExportData();
+  }
 }
 
 function createProjectTile(proj, index) {
@@ -106,25 +116,41 @@ function createProjectTile(proj, index) {
   tile.className = "project-tile";
 
   const editButton = isDevelopment ? '<button class="edit-btn">Edit</button>' : '';
+  const deleteButton = isDevelopment ? '<button class="delete-btn">Delete</button>' : '';
   const shortDesc = proj.description.length > 100 ? proj.description.substring(0, 100) + '...' : proj.description;
   
   tile.innerHTML = `
     <h3>${proj.title}</h3>
     <div class="desc">${shortDesc}</div>
     <div class="click-hint">Click to view details</div>
-    ${editButton}
+    <div class="tile-actions">
+      ${editButton}
+      ${deleteButton}
+    </div>
   `;
 
   tile.addEventListener("click", (e) => {
-    if (e.target.classList.contains("edit-btn")) return;
+    if (e.target.classList.contains("edit-btn") || e.target.classList.contains("delete-btn")) return;
     openProjectDetail(proj);
   });
 
   if (isDevelopment) {
-    tile.querySelector(".edit-btn").addEventListener("click", evt => {
-      evt.stopPropagation();
-      openProjectModal(index);
-    });
+    const editBtn = tile.querySelector(".edit-btn");
+    const deleteBtn = tile.querySelector(".delete-btn");
+    
+    if (editBtn) {
+      editBtn.addEventListener("click", evt => {
+        evt.stopPropagation();
+        openProjectModal(index);
+      });
+    }
+    
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", evt => {
+        evt.stopPropagation();
+        deleteProject(index);
+      });
+    }
   }
 
   return tile;
@@ -132,9 +158,19 @@ function createProjectTile(proj, index) {
 
 function renderSkills() {
   DOM.skillsList.innerHTML = "";
-  skillsData.forEach(skill => {
+  skillsData.forEach((skill, index) => {
     const li = document.createElement("li");
-    li.textContent = skill;
+    li.className = "skill-item";
+    
+    if (isDevelopment) {
+      li.innerHTML = `
+        <span class="skill-text">${skill}</span>
+        <button class="skill-delete-btn" onclick="deleteSkill(${index})" title="Delete skill">×</button>
+      `;
+    } else {
+      li.textContent = skill;
+    }
+    
     DOM.skillsList.appendChild(li);
   });
 }
@@ -710,6 +746,142 @@ async function createPdfFromCamera() {
 // Make functions globally accessible
 window.removeCapturedPhoto = removeCapturedPhoto;
 
+// Auto-export functionality for development
+async function autoExportData() {
+  try {
+    const projects = await DataManager.loadProjects();
+    const skills = await DataManager.loadSkills();
+    
+    const data = {
+      projects: projects,
+      skills: skills
+    };
+    
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create invisible download link
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'portfolio-data.json';
+    a.style.display = 'none';
+    
+    // Show notification instead of auto-download
+    showUpdateNotification(url, a);
+    
+  } catch (error) {
+    console.error('Auto-export failed:', error);
+  }
+}
+
+function showUpdateNotification(url, downloadLink) {
+  // Remove existing notification
+  const existing = document.getElementById('update-notification');
+  if (existing) existing.remove();
+  
+  // Create notification
+  const notification = document.createElement('div');
+  notification.id = 'update-notification';
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #1976d2, #3cc2ff);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    z-index: 10000;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.9rem;
+    max-width: 300px;
+    animation: slideIn 0.3s ease;
+  `;
+  
+  notification.innerHTML = `
+    <div style="margin-bottom: 10px;">📁 Data Updated!</div>
+    <div style="font-size: 0.8rem; margin-bottom: 15px; opacity: 0.9;">
+      Download updated portfolio-data.json for GitHub
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button id="download-btn" style="
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.8rem;
+      ">Download</button>
+      <button id="dismiss-btn" style="
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.8rem;
+      ">Dismiss</button>
+    </div>
+  `;
+  
+  // Add CSS animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  document.body.appendChild(notification);
+  
+  // Add event listeners
+  notification.querySelector('#download-btn').addEventListener('click', () => {
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(url);
+    notification.remove();
+  });
+  
+  notification.querySelector('#dismiss-btn').addEventListener('click', () => {
+    URL.revokeObjectURL(url);
+    notification.remove();
+  });
+  
+  // Auto-dismiss after 10 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      URL.revokeObjectURL(url);
+      notification.remove();
+    }
+  }, 10000);
+}
+
+// Delete project function
+async function deleteProject(index) {
+  if (confirm(`Are you sure you want to delete "${projectsData[index].title}"?`)) {
+    projectsData.splice(index, 1);
+    await saveProjects(projectsData);
+    renderProjects();
+  }
+}
+
+// Delete skill function
+async function deleteSkill(index) {
+  if (confirm(`Are you sure you want to delete "${skillsData[index]}"?`)) {
+    skillsData.splice(index, 1);
+    await saveSkills(skillsData);
+    renderSkills();
+  }
+}
+
+// Make deleteSkill globally accessible
+window.deleteSkill = deleteSkill;
+
 // Make removeImage globally accessible
 window.removeImage = removeImage;
 
@@ -951,18 +1123,61 @@ window.addEventListener('orientationchange', () => {
   setTimeout(setViewportHeight, 100);
 });
 
-// Service Worker registration
+// Service Worker registration for production
 if ('serviceWorker' in navigator && !isDevelopment) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
-      .then(registration => console.log('SW registered:', registration))
-      .catch(error => console.log('SW registration failed:', error));
+      .then(registration => {
+        console.log('Service Worker registered successfully');
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New content available, refresh page
+              if (confirm('New version available! Refresh to update?')) {
+                window.location.reload();
+              }
+            }
+          });
+        });
+      })
+      .catch(error => console.error('Service Worker registration failed:', error));
   });
+}
+
+// Intersection Observer for lazy loading animations
+function initLazyLoading() {
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('loaded');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    // Observe sections for lazy loading
+    document.querySelectorAll('section').forEach(section => {
+      section.classList.add('lazy-load');
+      observer.observe(section);
+    });
+  } else {
+    // Fallback for older browsers
+    document.querySelectorAll('section').forEach(section => {
+      section.classList.add('loaded');
+    });
+  }
 }
 
 // Initialize app when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', () => {
+    init();
+    initLazyLoading();
+  });
 } else {
   init();
+  initLazyLoading();
 }
