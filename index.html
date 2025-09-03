@@ -36,8 +36,7 @@
   <link rel="preload" href="styles.css" as="style" />
   <link rel="preload" href="no_bg.png" as="image" />
   
-  <!-- Link to CSS -->
-  <link rel="stylesheet" href="styles.css?v=20250103001" />
+  <!-- CSS will be loaded dynamically -->
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
@@ -351,7 +350,18 @@
     Write with me!
   </div>
 
-  <script type="module" src="script.js?v=20250103001"></script>
+  <script>
+    // Force cache bust on every load
+    const timestamp = Date.now();
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `styles.css?v=${timestamp}`;
+    document.head.appendChild(link);
+    
+    import(`./script.js?v=${timestamp}`).then(module => {
+      // Module loaded with cache bust
+    });
+  </script>
 
 </body>
 </html>
