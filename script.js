@@ -1,4 +1,4 @@
-import { DataManager } from "./data-manager.js?v=1.0.1";
+import { DataManager } from "./data-manager.js?v=20250103001";
 
 const DOM = {
   projectGrid: document.getElementById("projectGrid"),
@@ -1441,7 +1441,7 @@ window.addEventListener('orientationchange', () => {
 // Service Worker registration for production with cache busting
 if ('serviceWorker' in navigator && !isDevelopment) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=1.0.1')
+    navigator.serviceWorker.register('./sw.js?v=20250103001')
       .then(registration => {
         console.log('Service Worker registered successfully');
         // Force update check
