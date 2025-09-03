@@ -1,4 +1,4 @@
-import { DataManager } from "./data-manager.js";
+import { DataManager } from "./data-manager.js?v=1.0.1";
 
 const DOM = {
   projectGrid: document.getElementById("projectGrid"),
@@ -1438,12 +1438,14 @@ window.addEventListener('orientationchange', () => {
   setTimeout(setViewportHeight, 100);
 });
 
-// Service Worker registration for production
+// Service Worker registration for production with cache busting
 if ('serviceWorker' in navigator && !isDevelopment) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker.register('./sw.js?v=1.0.1')
       .then(registration => {
         console.log('Service Worker registered successfully');
+        // Force update check
+        registration.update();
         // Check for updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
@@ -1451,7 +1453,7 @@ if ('serviceWorker' in navigator && !isDevelopment) {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               // New content available, refresh page
               if (confirm('New version available! Refresh to update?')) {
-                window.location.reload();
+                window.location.reload(true);
               }
             }
           });
