@@ -36,7 +36,7 @@
   <link rel="preload" href="styles.css" as="style" />
   <link rel="preload" href="no_bg.png" as="image" />
   
-  <!-- CSS will be loaded dynamically -->
+
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
@@ -350,29 +350,10 @@
     Write with me!
   </div>
 
-  <script>
-    // Aggressive cache busting
-    const bust = Math.random().toString(36) + Date.now();
-    
-    // Load CSS
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `styles.css?cb=${bust}`;
-    document.head.appendChild(link);
-    
-    // Load JS
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src = `script.js?cb=${bust}`;
-    document.head.appendChild(script);
-    
-    // Clear all caches
-    if ('caches' in window) {
-      caches.keys().then(names => {
-        names.forEach(name => caches.delete(name));
-      });
-    }
-  </script>
+  <!-- Link to CSS -->
+  <link rel="stylesheet" href="styles.css?v=2025010302" />
+  
+  <script type="module" src="script.js?v=2025010302"></script>
 
 </body>
 </html>
