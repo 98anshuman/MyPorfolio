@@ -1045,32 +1045,10 @@ function initUtilitiesMenu() {
 }
 
 function initProductionOptimizations() {
-  // Viewport height fix for mobile browsers
-  function setVH() {
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-  }
-  
+  // Minimal optimizations only
+  const setVH = () => document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
   setVH();
-  window.addEventListener('resize', debounce(setVH, 100));
-  window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
-  
-  // Preload critical resources
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(() => {
-      if (!window.pdfjsLib) {
-        const link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.href = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-        document.head.appendChild(link);
-      }
-    });
-  }
-  
-  // Error boundary
-  window.addEventListener('error', (e) => {
-    console.error('Production Error:', e.error);
-  });
+  window.addEventListener('resize', debounce(setVH, 250));
 }
 
 function initPdfReducer() {
@@ -1393,7 +1371,7 @@ async function init() {
   // Initialize smooth header
   initScrollHeader();
   
-  // Production optimizations
+  // Minimal optimizations
   initProductionOptimizations();
   
   // Hide edit elements in production
