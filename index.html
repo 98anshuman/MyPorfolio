@@ -351,16 +351,27 @@
   </div>
 
   <script>
-    // Force cache bust on every load
-    const timestamp = Date.now();
+    // Aggressive cache busting
+    const bust = Math.random().toString(36) + Date.now();
+    
+    // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = `styles.css?v=${timestamp}`;
+    link.href = `styles.css?cb=${bust}`;
     document.head.appendChild(link);
     
-    import(`./script.js?v=${timestamp}`).then(module => {
-      // Module loaded with cache bust
-    });
+    // Load JS
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = `script.js?cb=${bust}`;
+    document.head.appendChild(script);
+    
+    // Clear all caches
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => caches.delete(name));
+      });
+    }
   </script>
 
 </body>
