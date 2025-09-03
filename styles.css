@@ -565,7 +565,7 @@ section h2 {
 /* Modern Skills Grid */
 .skills-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: clamp(0.5rem, 2vw, 1rem);
   list-style: none;
   padding: 0;
@@ -790,92 +790,99 @@ a:focus {
   border: 0;
 }
 
-/* Modern PDF Tools Container */
-.pdf-tools-container {
+/* Utilities Container */
+.utilities-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
   z-index: 1000;
 }
 
-/* Base PDF Tool Card */
-.pdf-tool-card {
-  background: rgba(21, 25, 46, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 16px 20px;
+/* Futuristic Utilities Button */
+.utilities-btn {
+  background: linear-gradient(135deg, rgba(15, 25, 45, 0.95) 0%, rgba(25, 35, 65, 0.98) 100%);
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border: 2px solid transparent;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  min-width: 180px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(60, 194, 255, 0.8);
+  box-shadow: 
+    0 0 15px rgba(60, 194, 255, 0.4),
+    0 4px 20px rgba(0, 0, 0, 0.3);
+  min-width: 120px;
   position: relative;
-  overflow: hidden;
 }
 
-.pdf-tool-card::before {
+.utilities-btn::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  background: linear-gradient(90deg, #3cc2ff, #1976d2, #3cc2ff);
+  border-radius: 25px;
+  z-index: -1;
+  animation: borderGlow 2s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.utilities-btn:hover {
+  transform: translateY(-3px);
+  border-color: rgba(60, 194, 255, 1);
+  box-shadow: 
+    0 0 20px rgba(60, 194, 255, 0.6),
+    0 8px 25px rgba(60, 194, 255, 0.2);
+}
+
+.utilities-menu {
+  position: absolute;
+  bottom: 100%;
   right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background: rgba(21, 25, 46, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  border: 1px solid rgba(60, 194, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  margin-bottom: 8px;
+  min-width: 160px;
 }
 
-.pdf-tool-card:hover::before {
-  opacity: 1;
+.utility-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.pdf-tool-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+.utility-item:last-child {
+  border-bottom: none;
 }
 
-.pdf-tool-card:active {
-  transform: translateY(-2px) scale(0.98);
+.utility-item:hover {
+  background: rgba(60, 194, 255, 0.1);
 }
 
-/* PDF Merge Card */
-.pdf-merge-card {
-  border-color: rgba(255, 152, 0, 0.6);
-  background: linear-gradient(135deg, rgba(255, 152, 0, 0.15) 0%, rgba(255, 193, 7, 0.1) 100%);
+.utility-icon {
+  font-size: 1.2rem;
 }
 
-.pdf-merge-card:hover {
-  border-color: rgba(255, 152, 0, 1);
-  box-shadow: 0 16px 48px rgba(255, 152, 0, 0.3);
+.utility-text {
+  color: #e2f2fd;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-/* Image to PDF Card */
-.image-pdf-card {
-  border-color: rgba(76, 175, 80, 0.6);
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(139, 195, 74, 0.1) 100%);
-}
 
-.image-pdf-card:hover {
-  border-color: rgba(76, 175, 80, 1);
-  box-shadow: 0 16px 48px rgba(76, 175, 80, 0.3);
-}
-
-/* Camera Scanner Card */
-.camera-scanner-card {
-  border-color: rgba(156, 39, 176, 0.6);
-  background: linear-gradient(135deg, rgba(156, 39, 176, 0.15) 0%, rgba(233, 30, 99, 0.1) 100%);
-}
-
-.camera-scanner-card:hover {
-  border-color: rgba(156, 39, 176, 1);
-  box-shadow: 0 16px 48px rgba(156, 39, 176, 0.3);
-}
 
 /* Tool Icon */
 .tool-icon {
@@ -891,20 +898,15 @@ a:focus {
   transition: all 0.3s ease;
 }
 
-.pdf-merge-card .tool-icon {
-  background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+.utilities-btn .tool-icon {
+  background: linear-gradient(135deg, #3cc2ff 0%, #1976d2 100%);
+  box-shadow: 0 0 8px rgba(60, 194, 255, 0.4);
 }
 
-.image-pdf-card .tool-icon {
-  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
-}
-
-.camera-scanner-card .tool-icon {
-  background: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%);
-}
-
-.pdf-tool-card:hover .tool-icon {
-  transform: scale(1.1) rotate(5deg);
+.utilities-btn .tool-title {
+  color: #ffffff;
+  text-shadow: 0 0 5px rgba(60, 194, 255, 0.3);
+  font-weight: 600;
 }
 
 /* Tool Content */
@@ -931,99 +933,43 @@ a:focus {
 
 /* Mobile Optimizations */
 @media (max-width: 768px) {
-  .pdf-tools-container {
+  .utilities-container {
     bottom: 15px;
     right: 15px;
-    left: auto;
-    flex-direction: column;
-    align-items: flex-end;
-    width: auto;
-    max-width: 200px;
   }
   
-  .pdf-tool-card {
-    min-width: 160px;
+  .utilities-btn {
+    min-width: 120px;
+    padding: 12px 16px;
+  }
+  
+  .utilities-menu {
+    min-width: 140px;
+  }
+  
+  .utility-item {
     padding: 10px 12px;
-    gap: 8px;
   }
   
-  .tool-icon {
-    width: 32px;
-    height: 32px;
-    font-size: 1.1rem;
-  }
-  
-  .tool-title {
+  .utility-text {
     font-size: 0.8rem;
-  }
-  
-  .tool-description {
-    font-size: 0.65rem;
   }
 }
 
 /* Extra Small Mobile */
 @media (max-width: 480px) {
-  .pdf-tools-container {
-    bottom: 10px;
-    right: 10px;
-    left: auto;
-    max-width: 150px;
+  .utilities-btn {
+    min-width: 100px;
+    padding: 10px 12px;
   }
   
-  .pdf-tool-card {
-    min-width: 140px;
-    padding: 8px 10px;
-    gap: 6px;
-    border-radius: 10px;
-  }
-  
-  .tool-icon {
-    width: 28px;
-    height: 28px;
-    font-size: 1rem;
-    border-radius: 6px;
-  }
-  
-  .tool-title {
-    font-size: 0.75rem;
-  }
-  
-  .tool-description {
-    font-size: 0.6rem;
+  .utilities-menu {
+    min-width: 120px;
   }
 }
 
 /* Landscape Mobile */
-@media (max-width: 768px) and (orientation: landscape) {
-  .pdf-tools-container {
-    flex-direction: row;
-    bottom: 8px;
-    right: 8px;
-    left: auto;
-    gap: 6px;
-    max-width: none;
-  }
-  
-  .pdf-tool-card {
-    min-width: 100px;
-    padding: 6px 8px;
-  }
-  
-  .tool-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 0.9rem;
-  }
-  
-  .tool-title {
-    font-size: 0.7rem;
-  }
-  
-  .tool-description {
-    display: none;
-  }
-}
+
 
 /* Camera Interface Styles */
 .camera-video {
@@ -1219,22 +1165,25 @@ button,
   }
   
   .skills-list {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.4rem;
   }
   
   .skills-list li {
-    padding: 6px 8px;
-    font-size: 0.8rem;
-    border-radius: 12px;
-    min-height: 32px;
+    padding: 5px 6px;
+    font-size: 0.75rem;
+    border-radius: 10px;
+    min-height: 28px;
+    word-break: break-word;
+    hyphens: auto;
+    line-height: 1.2;
   }
   
   .skill-delete-btn {
-    width: 16px;
-    height: 16px;
-    font-size: 10px;
-    margin-left: 4px;
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+    margin-left: 3px;
   }
   
   .modal-content {
@@ -1264,13 +1213,15 @@ button,
   }
   
   .skills-list {
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: 0.6rem;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
   }
   
   .skills-list li {
-    font-size: 0.9rem;
-    padding: 7px 10px;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    word-break: break-word;
+    hyphens: auto;
   }
   
   .resume-card {
@@ -1344,8 +1295,8 @@ button,
   }
   
   .skills-list {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 0.8rem;
+    grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+    gap: 0.7rem;
   }
 }
 
@@ -1503,6 +1454,8 @@ button,
   cursor: grab;
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .file-item:hover {
@@ -1557,6 +1510,189 @@ button,
   margin-top: 15px;
   font-family: 'Roboto Mono', monospace;
   color: #43c3ff;
+}
+
+/* PDF Reducer Specific Styles */
+.pdf-reducer-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.file-info {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(60, 194, 255, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid #3cc2ff;
+}
+
+.file-details {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #43c3ff;
+  margin-bottom: 5px;
+  word-break: break-all;
+}
+
+.file-size {
+  color: #e2f2fd;
+  font-size: 0.9rem;
+}
+
+.size-preview {
+  margin-top: 10px;
+}
+
+.size-estimate {
+  background: rgba(255, 193, 7, 0.1);
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 3px solid #ffc107;
+}
+
+.estimate-title {
+  font-weight: 600;
+  color: #ffc107;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.estimate-details {
+  font-size: 0.85rem;
+  color: #e2f2fd;
+}
+
+.estimate-details div {
+  margin: 2px 0;
+}
+
+.compression-options {
+  background: #15192e;
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px 0;
+  border-left: 5px solid #ff5722;
+}
+
+.compression-options h4 {
+  color: #ff5722;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.compression-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compression-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.compression-controls label:hover {
+  background: rgba(255, 87, 34, 0.1);
+}
+
+.compression-controls input[type="radio"] {
+  accent-color: #ff5722;
+  width: 16px;
+  height: 16px;
+}
+
+.reduce-section {
+  text-align: center;
+}
+
+.compression-result {
+  background: rgba(76, 175, 80, 0.2);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #4caf50;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.compression-result div {
+  margin: 5px 0;
+}
+
+.compression-result div:first-child {
+  font-weight: 600;
+  color: #4caf50;
+}
+
+@media (max-width: 768px) {
+  .compression-controls {
+    gap: 8px;
+  }
+  
+  .compression-controls label {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+  
+  .file-info {
+    padding: 10px;
+  }
+  
+  .compression-options {
+    padding: 15px;
+  }
+  
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px;
+  }
+  
+  .file-item > div:first-child {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  
+  .file-item button {
+    align-self: flex-end;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .preview-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 8px !important;
+  }
+  
+  .preview-item > span:first-child {
+    align-self: flex-start;
+    margin-bottom: 8px;
+  }
+  
+  .preview-item > img {
+    margin: 0 0 8px 0 !important;
+  }
+  
+  .preview-item > button {
+    align-self: flex-end;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .captured-image {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 8px !important;
+  }
 }
 
 /* Critical CSS Loading */

@@ -134,32 +134,32 @@
     </p>
   </section>
 
-  <!-- Modern PDF Tools Container -->
-  <div class="pdf-tools-container">
-    <!-- PDF Merge Card -->
-    <div class="pdf-tool-card pdf-merge-card" id="pdfMergeLink" title="Merge multiple PDF files into one">
-      <div class="tool-icon">📄</div>
+  <!-- Utilities Button -->
+  <div class="utilities-container">
+    <button class="utilities-btn" id="utilitiesBtn" title="PDF & Document Tools" aria-expanded="false" aria-haspopup="true">
+      <div class="tool-icon">🛠️</div>
       <div class="tool-content">
-        <div class="tool-title">PDF Merge</div>
-        <div class="tool-description">Combine multiple PDFs</div>
+        <div class="tool-title">Utilities</div>
       </div>
-    </div>
+    </button>
     
-    <!-- Image to PDF Card -->
-    <div class="pdf-tool-card image-pdf-card" id="pdfScannerLink" title="Convert images to PDF">
-      <div class="tool-icon">🖼️</div>
-      <div class="tool-content">
-        <div class="tool-title">Image to PDF</div>
-        <div class="tool-description">Convert images to PDF</div>
+    <!-- Utilities Menu -->
+    <div class="utilities-menu" id="utilitiesMenu" role="menu" aria-label="PDF Utilities" style="display:none;">
+      <div class="utility-item" id="pdfMergeLink" role="menuitem" aria-label="Merge PDF files">
+        <span class="utility-icon">📄</span>
+        <span class="utility-text">PDF Merge</span>
       </div>
-    </div>
-    
-    <!-- Camera Scanner Card -->
-    <div class="pdf-tool-card camera-scanner-card" id="cameraScannerLink" title="Scan documents with camera">
-      <div class="tool-icon">📱</div>
-      <div class="tool-content">
-        <div class="tool-title">Camera Scan</div>
-        <div class="tool-description">Scan docs with camera</div>
+      <div class="utility-item" id="pdfScannerLink" role="menuitem" aria-label="Convert images to PDF">
+        <span class="utility-icon">🖼️</span>
+        <span class="utility-text">Image to PDF</span>
+      </div>
+      <div class="utility-item" id="cameraScannerLink" role="menuitem" aria-label="Scan documents with camera">
+        <span class="utility-icon">📱</span>
+        <span class="utility-text">Camera Scan</span>
+      </div>
+      <div class="utility-item" id="pdfReducerLink" role="menuitem" aria-label="Compress PDF file size">
+        <span class="utility-icon">📉</span>
+        <span class="utility-text">PDF Reducer</span>
       </div>
     </div>
   </div>
@@ -300,6 +300,43 @@
           <div class="scan-section">
             <button id="createPdfFromCameraBtn" class="merge-btn" disabled>Create PDF</button>
             <div id="cameraStatus" class="merge-status"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Size Reducer Modal -->
+  <div id="pdfReducerModal" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="pdfReducerTitle" tabindex="-1" style="display:none;">
+    <div class="fullscreen-modal-content">
+      <div class="project-detail-header">
+        <div class="project-nav">
+          <button id="backFromPdfReducerBtn" class="back-btn">
+            <span>←</span> Back to Portfolio
+          </button>
+          <button id="closePdfReducerBtn" class="close-btn" aria-label="Close PDF Reducer">&times;</button>
+        </div>
+        <h1 id="pdfReducerTitle" class="project-detail-title">PDF Size Reducer</h1>
+      </div>
+      <div class="project-detail-body">
+        <div class="pdf-reducer-container">
+          <div class="upload-section">
+            <h3>Compress PDF File</h3>
+            <input type="file" id="reducerFileInput" accept=".pdf" class="file-input">
+            <div class="file-info" id="reducerFileInfo"></div>
+          </div>
+          <div class="compression-options">
+            <h4>Compression Level</h4>
+            <div class="compression-controls">
+              <label><input type="radio" name="compression" value="low" checked> Low (Better Quality)</label>
+              <label><input type="radio" name="compression" value="medium"> Medium (Balanced)</label>
+              <label><input type="radio" name="compression" value="high"> High (Smaller Size)</label>
+              <label><input type="radio" name="compression" value="extreme"> Extreme (Maximum Compression)</label>
+            </div>
+          </div>
+          <div class="reduce-section">
+            <button id="reducePdfBtn" class="merge-btn" disabled>Compress PDF</button>
+            <div id="reduceStatus" class="merge-status"></div>
           </div>
         </div>
       </div>
