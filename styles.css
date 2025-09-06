@@ -44,9 +44,9 @@ body {
 header {
   text-align: center;
   padding: clamp(0.75rem, 2vw, 1.5rem) 0 clamp(0.25rem, 1vw, 0.75rem) 0;
-  background:
-    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-    url('header-bg.png') no-repeat center center / cover;
+  background: 
+    linear-gradient(rgba(16, 20, 42, 0.7), rgba(16, 20, 42, 0.7)),
+    url(baground.png) center/cover !important;
   color: #fff;
   border-bottom: 3px solid #1976d2;
   box-shadow: 0 6px 24px #040c22cc;
@@ -103,6 +103,7 @@ header h1 {
   line-height: 1.2;
   letter-spacing: clamp(1px, 0.5vw, 2px);
   transition: all 0.3s ease;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
 
 
@@ -196,8 +197,9 @@ nav ul li a {
   display: block;
   padding: clamp(0.5rem, 2vw, 1rem);
   border-radius: 8px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.3);
   backdrop-filter: blur(10px);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
 
@@ -1755,4 +1757,75 @@ button,
     outline: 2px solid #3cc2ff;
     outline-offset: 2px;
   }
+}
+
+/* Meeting Section */
+.meeting-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #1a2040 0%, #2a3555 100%);
+  border-radius: 12px;
+  border-left: 4px solid #3cc2ff;
+}
+
+.meeting-section h3 {
+  color: #3cc2ff;
+  margin-top: 0;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.meeting-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.meeting-btn {
+  background: linear-gradient(135deg, #1976d2 0%, #3cc2ff 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.meeting-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(60, 194, 255, 0.4);
+}
+
+.meeting-icon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .meeting-options {
+    flex-direction: column;
+  }
+  
+  .meeting-btn {
+    width: 100%;
+  }
+}
+/* Prevent white flash on load */
+html {
+  background: #10142a;
+}
+
+body {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+body.loaded {
+  opacity: 1;
 }

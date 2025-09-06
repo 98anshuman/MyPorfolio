@@ -336,6 +336,7 @@ let cameraStream = null;
 
 // PDF Reducer functionality
 let selectedPdfFile = null;
+let selectedPlatform = '';
 
 function initPdfMerge() {
   DOM.pdfMergeLink.addEventListener('click', (e) => {
@@ -429,11 +430,13 @@ function removeImage(index) {
 async function createPdfFromImages() {
   if (selectedImages.length === 0) return;
   
-  DOM.scanStatus.textContent = 'Creating PDF from images...';
+  DOM.scanStatus.textContent = 'Loading PDF library...';
   DOM.scanToPdfBtn.disabled = true;
   DOM.scanToPdfBtn.classList.add('loading');
   
   try {
+    await loadPdfLib();
+    DOM.scanStatus.textContent = 'Creating PDF from images...';
     const pdfDoc = await PDFLib.PDFDocument.create();
     
     for (let i = 0; i < selectedImages.length; i++) {
@@ -709,11 +712,13 @@ function handleCameraDragEnd(e) {
 async function createPdfFromCamera() {
   if (capturedPhotos.length === 0) return;
   
-  DOM.cameraStatus.textContent = 'Creating PDF from captured photos...';
+  DOM.cameraStatus.textContent = 'Loading PDF library...';
   DOM.createPdfFromCameraBtn.disabled = true;
   DOM.createPdfFromCameraBtn.classList.add('loading');
   
   try {
+    await loadPdfLib();
+    DOM.cameraStatus.textContent = 'Creating PDF from captured photos...';
     const pdfDoc = await PDFLib.PDFDocument.create();
     
     for (let i = 0; i < capturedPhotos.length; i++) {
@@ -996,6 +1001,92 @@ function removeFile(index) {
 // Make removeFile globally accessible
 window.removeFile = removeFile;
 
+function initMeetingScheduler() {
+  const modal = document.getElementById('meetingModal');
+  
+  document.getElementById('googleMeetBtn').addEventListener('click', () => {
+    selectedPlatform = 'Google Meet';
+    openMeetingModal();
+  });
+  
+  document.getElementById('zoomBtn').addEventListener('click', () => {
+    selectedPlatform = 'Zoom';
+    openMeetingModal();
+  });
+  
+  document.getElementById('teamsBtn').addEventListener('click', () => {
+    selectedPlatform = 'Microsoft Teams';
+    openMeetingModal();
+  });
+  
+  document.getElementById('cancelMeetingBtn').addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  
+  document.getElementById('scheduleMeetingBtn').addEventListener('click', scheduleMeeting);
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.style.display = 'none';
+  });
+}
+
+function openMeetingModal() {
+  document.getElementById('meetingModalTitle').textContent = `Schedule ${selectedPlatform} Meeting`;
+  document.getElementById('meetingModal').style.display = 'flex';
+  
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('meetingDate').min = today;
+}
+
+function scheduleMeeting() {
+  const name = document.getElementById('userName').value.trim();
+  const email = document.getElementById('userEmail').value.trim();
+  const date = document.getElementById('meetingDate').value;
+  const time = document.getElementById('meetingTime').value;
+  const topic = document.getElementById('meetingTopic').value.trim();
+  
+  if (!name || !email || !date || !time) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+  
+  const startDateTime = new Date(`${date}T${time}`);
+  const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+  
+  const eventTitle = `${selectedPlatform} Meeting with ${name}`;
+  const eventDescription = `Meeting via ${selectedPlatform}%0A%0ARequested by: ${name} (${email})%0A%0ATopic: ${topic || 'General Discussion'}`;
+  
+  const start = startDateTime.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const end = endDateTime.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  
+  // Platform-specific URLs
+  let meetingUrl = '';
+  
+  if (selectedPlatform === 'Google Meet') {
+    meetingUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${start}/${end}&details=${eventDescription}&location=Google%20Meet&add=anshuman0124@gmail.com,${encodeURIComponent(email)}`;
+  } else if (selectedPlatform === 'Zoom') {
+    meetingUrl = `https://zoom.us/meeting/schedule`;
+  } else if (selectedPlatform === 'Microsoft Teams') {
+    meetingUrl = `https://teams.microsoft.com/l/meeting/new`;
+  }
+  
+  window.open(meetingUrl, '_blank');
+  
+  document.getElementById('meetingModal').style.display = 'none';
+  
+  document.getElementById('userName').value = '';
+  document.getElementById('userEmail').value = '';
+  document.getElementById('meetingDate').value = '';
+  document.getElementById('meetingTime').value = '';
+  document.getElementById('meetingTopic').value = '';
+  
+  if (selectedPlatform === 'Google Meet') {
+    alert('Google Meet calendar event created! Both you and Anshuman will receive the invite.');
+  } else {
+    alert(`${selectedPlatform} scheduler opened! Please create the meeting and invite anshuman0124@gmail.com`);
+  }
+}
+
 function initUtilitiesMenu() {
   const utilitiesBtn = document.getElementById('utilitiesBtn');
   const utilitiesMenu = document.getElementById('utilitiesMenu');
@@ -1044,8 +1135,18 @@ function initUtilitiesMenu() {
   });
 }
 
+async function loadPdfLib() {
+  if (window.PDFLib) return;
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+    script.onload = () => resolve();
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
 function initProductionOptimizations() {
-  // Minimal optimizations only
   const setVH = () => document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
   setVH();
   window.addEventListener('resize', debounce(setVH, 250));
@@ -1142,10 +1243,8 @@ async function reducePdfSize() {
   DOM.reducePdfBtn.classList.add('loading');
   
   try {
-    // Load PDF.js for rendering
-    if (!window.pdfjsLib) {
-      await loadPdfJs();
-    }
+    // Load both PDF libraries
+    await Promise.all([loadPdfJs(), loadPdfLib()]);
     
     const arrayBuffer = await selectedPdfFile.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -1266,10 +1365,12 @@ function getCompressionQuality(level) {
 async function mergePdfs() {
   if (selectedFiles.length < 2) return;
   
-  DOM.mergeStatus.textContent = 'Merging PDFs...';
+  DOM.mergeStatus.textContent = 'Loading PDF library...';
   DOM.mergePdfBtn.disabled = true;
   
   try {
+    await loadPdfLib();
+    DOM.mergeStatus.textContent = 'Merging PDFs...';
     const mergedPdf = await PDFLib.PDFDocument.create();
     
     for (const file of selectedFiles) {
@@ -1368,6 +1469,9 @@ async function init() {
   // Initialize utilities menu
   initUtilitiesMenu();
   
+  // Initialize meeting scheduler
+  initMeetingScheduler();
+  
   // Initialize smooth header
   initScrollHeader();
   
@@ -1387,7 +1491,9 @@ async function init() {
       e.preventDefault();
       const target = document.querySelector(this.getAttribute('href'));
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const headerHeight = document.querySelector('header').offsetHeight;
+        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
       }
     });
   });
@@ -1490,9 +1596,11 @@ if (document.readyState === 'loading') {
     init();
     initLazyLoading();
     handlePageRefresh();
+    document.body.classList.add('loaded');
   });
 } else {
   init();
   initLazyLoading();
   handlePageRefresh();
+  document.body.classList.add('loaded');
 }

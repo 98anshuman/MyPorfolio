@@ -32,19 +32,23 @@
   
   <title>Anshuman - Cybersecurity Engineer Portfolio</title>
 
+  <!-- Critical CSS inline -->
+  <style>
+    html{background:#10142a}body{background:#10142a;color:#e2f2fd;font-family:Roboto,Arial,sans-serif;margin:0;padding:0;min-height:100vh;opacity:0;transition:opacity .3s ease}body.loaded{opacity:1}header{text-align:center;padding:1rem 0 .5rem;background:linear-gradient(rgba(16,20,42,0.7),rgba(16,20,42,0.7)),url(baground.png) center/cover !important;color:#fff;border-bottom:3px solid #1976d2;position:sticky;top:0;z-index:100}.avatar{width:120px;height:120px;border-radius:50%;border:3px solid #163462}.cyber-glow{color:#3cc2ff;text-shadow:0 0 6px #54c3ff}
+  </style>
+  
   <!-- Preload critical resources -->
-  <link rel="preload" href="styles.css" as="style" />
+  <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="styles.css"></noscript>
   <link rel="preload" href="no_bg.png" as="image" />
   <link rel="preload" href="script.js" as="script" />
-  <link rel="preload" href="data-manager.js" as="script" />
   
 
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
   
-  <!-- PDF-lib for client-side PDF merging -->
-  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- Lazy load PDF libraries only when needed -->
   
   <!-- Performance optimizations -->
   <link rel="dns-prefetch" href="//fonts.googleapis.com" />
@@ -134,6 +138,25 @@
     <p><b>LinkedIn:</b> 
       <a href="https://www.linkedin.com/in/anshuman-00020a193" target="_blank" rel="noopener" class="linkedin-link">linkedin.com/in/anshuman-00020a193</a>
     </p>
+    
+    <div class="meeting-section">
+      <h3>📅 Schedule a Meeting</h3>
+      <p>Let's connect! Choose your preferred platform:</p>
+      <div class="meeting-options">
+        <button class="meeting-btn" id="googleMeetBtn">
+          <span class="meeting-icon">📹</span>
+          <span>Google Meet</span>
+        </button>
+        <button class="meeting-btn" id="zoomBtn">
+          <span class="meeting-icon">💻</span>
+          <span>Zoom</span>
+        </button>
+        <button class="meeting-btn" id="teamsBtn">
+          <span class="meeting-icon">👥</span>
+          <span>Microsoft Teams</span>
+        </button>
+      </div>
+    </div>
   </section>
 
   <!-- Utilities Button -->
@@ -342,6 +365,25 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Meeting Scheduler Modal -->
+  <div id="meetingModal" class="modal" role="dialog" aria-modal="true" style="display:none;">
+    <div class="modal-content">
+      <h3 id="meetingModalTitle">Schedule Meeting</h3>
+      <label for="userName">Your Name:</label><br>
+      <input type="text" id="userName" required><br><br>
+      <label for="userEmail">Your Email:</label><br>
+      <input type="email" id="userEmail" required><br><br>
+      <label for="meetingDate">Date:</label><br>
+      <input type="date" id="meetingDate" required><br><br>
+      <label for="meetingTime">Time:</label><br>
+      <input type="time" id="meetingTime" required><br><br>
+      <label for="meetingTopic">Topic/Agenda:</label><br>
+      <textarea id="meetingTopic" rows="3" placeholder="Brief description of what you'd like to discuss"></textarea><br><br>
+      <button id="scheduleMeetingBtn">Schedule Meeting</button>
+      <button id="cancelMeetingBtn">Cancel</button>
     </div>
   </div>
 
