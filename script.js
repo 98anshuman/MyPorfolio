@@ -1522,28 +1522,10 @@ window.addEventListener('orientationchange', () => {
   setTimeout(setViewportHeight, 100);
 });
 
-// Service Worker registration for production with cache busting
-if ('serviceWorker' in navigator && !isDevelopment) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=2025010302')
-      .then(registration => {
-        console.log('Service Worker registered successfully');
-        // Force update check
-        registration.update();
-        // Check for updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New content available, refresh page
-              if (confirm('New version available! Refresh to update?')) {
-                window.location.reload(true);
-              }
-            }
-          });
-        });
-      })
-      .catch(error => console.error('Service Worker registration failed:', error));
+// Unregister existing service workers for better cache control
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(registration => registration.unregister());
   });
 }
 
