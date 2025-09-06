@@ -1,4 +1,4 @@
-import { DataManager } from "./data-manager.js?v=2025010302";
+import { DataManager } from "./data-manager.js?v=20250110";
 
 const DOM = {
   projectGrid: document.getElementById("projectGrid"),
